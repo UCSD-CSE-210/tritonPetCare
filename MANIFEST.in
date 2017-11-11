@@ -1,0 +1,5 @@
+graft PetCare/blueprints
+graft PetCare/static
+graft PetCare/templates
+include PetCare/accounts.sql
+include PetCare/posts.sql

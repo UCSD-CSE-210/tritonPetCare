@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <ul class=entries>
+    {% for post in posts %}
+      <li><h2>{{ post.name }}</h2>
+      	{{ post.species + '\t' + post.start_date|string + '\t' + post.end_date|string }}
+      	<a href="{{ url_for('PetCare.list_posts') + '?post_id=' + post.id|string }}">link</a>
+    {% else %}
+      <li><em>Unbelievable.  No posts here so far</em>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

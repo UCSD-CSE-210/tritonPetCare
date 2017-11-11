@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>Post</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <form action="{{ url_for('PetCare.edit_post') }}" method=post>
+    <dl>
+      <dt>Name:
+      <dd><input type=text name=name>
+      <dt>Species:
+      <dd>
+        <select name=species>
+          <option value="Dog">Dog</option>
+          <option value="Cat">Cat</option>
+          <option value="Bird">Bird</option>
+        </select>
+      <dt>Breed:
+      <dd><input type=text name=breed>
+      <dt>Gender:
+      <dd>
+        <input type=radio name=gender value=1 checked>Male
+        <input type=radio name=gender value=0>Female
+      <dt>Age:
+      <dd>
+        <select name=age>
+          <option value=0><1 year</option>
+          <option value=1>1 year</option>
+          <option value=2>2 year</option>
+          <option value=3>3 year</option>
+          <option value=4>4 year</option>
+          <option value=5>5 year</option>
+          <option value=6>6 year</option>
+          <option value=7>7 year</option>
+          <option value=8>8 year</option>
+          <option value=9>9 year</option>
+        </select>
+      <dt>Vaccination:
+      <dd><input type=text name=vaccination>
+      <dt>Additional Vaccination:
+      <dd><input type=text name=vaccination_opt>
+      <dt>Start Date:
+      <dd><input type=date name=start_date>
+      <dt>End Date:
+      <dd><input type=date name=end_date>
+      <dt>Criteria:
+      <dd>
+        <select name=criteria>
+          <option value=0>No criteria</option>
+          <option value=1>1 point</option>
+          <option value=2>2 point</option>
+          <option value=3>3 point</option>
+          <option value=4>4 point</option>
+          <option value=5>5 point</option>
+        </select>
+      <dt>Notes:
+      <dd><input type=text name=notes>
+      <dt><input type=submit value=Submit>
+    </dl>
+  </form>
+{% endblock %}

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import time, datetime
 from flask import Blueprint, request, session, redirect, url_for, render_template, abort
-from daos import Dao, AccountDao, PostDao
+from Daos.Dao import Dao
+from Daos.AccountDao import AccountDao
+from Daos.PostDao import PostDao
 
 bp = Blueprint('PetCare', __name__)
 
@@ -80,30 +82,60 @@ def edit_post():
 		post = postDao.get_post(postId)
 		# TODO: return with post information shown
 		return render_template('edit_post.html', error=None)
-	args = make_args(session['logged_in'], request.form)
-	if not args:
+	postInfo = make_post_info(session['logged_in'], request.form)
+	if not postInfo:
 		return render_template('edit_post.html', error="Required Informaion Missing")
 	if postId is None:
-		postId = postDao.add_post(args)
+		postId = postDao.add_post(postInfo)
 		accountDao.update_account_post(session['logged_in'], postId)
 	else:
-		args['id'] = postId
-		postDao.update_post(args)
+		postInfo['id'] = postId
+		postDao.update_post(postInfo)
 	return redirect(url_for('PetCare.list_posts'))
 
-def make_args(id, input):
-	if not ('name' in input and 'species' in input and 'gender' in input and 'age' in input and 'vaccination'in input and 'start_date'in input and 'end_date' in input and 'criteria' in input):
-		return False
-	args = input.copy()
-	args['owner_id'] = id
-	args['start_date'] = int(time.mktime(time.strptime(input['start_date'], '%Y-%m-%d')))
-	args['end_date'] = int(time.mktime(time.strptime(input['end_date'], '%Y-%m-%d')))
-	args['post_date'] = int(time.time())
-	return args
+@bp.route('/view_post', methods=['GET'])
+def view_post():
+	if session.get('logged_in') is None:
+		return redirect(url_for('PetCare.login'))
+	postDao = PostDao()
+	post = postDao.get_post(request.args['id'])
+	change_time_format(dict(post))
+	return render_template('view_post.html', post=post)
 
-def change_time_format(args):
-	args['start_date'] = time.strftime('%Y-%m-%d', time.localtime(args['start_date']))
-	args['end_date'] = time.strftime('%Y-%m-%d', time.localtime(args['end_date']))
-	if 'post_date' in args:
-		args['post_date'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(args['post_date']))
+@bp.route('/delete_post', methods=['POST'])
+def delete_post():
+	if session.get('logged_in') is not None:
+		accountDao = AccountDao()
+		ownerMatched = accountDao.remove_account_post(session['logged_in'], request.form['id'])
+		if not ownerMatched:
+			return redirect(url_for('PetCare.list_posts'))
+		postDao = PostDao()
+		postDao.remove_post(request.form['id'])
+	return redirect(url_for('PetCare.list_posts'))
+
+@bp.route('/interest_post', methods=['POST'])
+def interest_post():
+	if session.get('logged_in') is not None:
+		postDao = PostDao()
+		firstTimeInteresting = postDao.add_interest(request.form['id'], session['logged_in'])
+		# if firstTimeInteresting:
+		# 	sendEmail()
+	return redirect(url_for('PetCare.list_posts'))
+
+def make_post_info(id, input):
+	postInfo = input.copy()
+	if not ('name' in postInfo and 'species' in postInfo and 'gender' in postInfo and 'age' in postInfo and 'vaccination'in postInfo
+			and 'start_date'in postInfo and 'end_date' in postInfo and 'criteria' in postInfo):
+		return False
+	postInfo['owner_id'] = id
+	postInfo['start_date'] = int(time.mktime(time.strptime(postInfo['start_date'], '%Y-%m-%d')))
+	postInfo['end_date'] = int(time.mktime(time.strptime(postInfo['end_date'], '%Y-%m-%d')))
+	postInfo['post_date'] = int(time.time())
+	return postInfo
+
+def change_time_format(postInfo):
+	postInfo['start_date'] = time.strftime('%Y-%m-%d', time.localtime(postInfo['start_date']))
+	postInfo['end_date'] = time.strftime('%Y-%m-%d', time.localtime(postInfo['end_date']))
+	if 'post_date' in postInfo:
+		postInfo['post_date'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(postInfo['post_date']))
 

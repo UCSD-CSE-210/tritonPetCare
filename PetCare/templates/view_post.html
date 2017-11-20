@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <ul class=post>
+    <li><h2>{{ post.name }}</h2>
+    	{{ post.species + '\t' + post.start_date|string + '\t' + post.end_date|string }}
+    {% if session.logged_in == post.owner_id %}
+      <a href="{{ url_for('PetCare.edit_post') }}">Edit</a>
+      <form action="{{ url_for('PetCare.delete_post') }}" method=post>
+      <dl>
+        <input type=hidden name=id value="{{ post.id }}">
+        <dt><input type=submit value=Delete>
+      </dl>
+    {% else %}
+      <form action="{{ url_for('PetCare.interest_post') }}" method=post>
+      <dl>
+        <input type=hidden name=id value="{{ post.id }}">
+        <dt><input type=submit value="I'm intrested!!!">
+      </dl>
+    {% endif %}
+    </ul>
+  {% endif %}
+{% endblock %}

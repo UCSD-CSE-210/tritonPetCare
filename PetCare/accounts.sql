@@ -6,6 +6,6 @@ CREATE TABLE accounts (
 	reputation_sum INTEGER NOT NULL,
 	reputation_num INTEGER NOT NULL,
 	verified INTEGER NOT NULL,
-	code TEXT NOT NULL,
+	code TEXT,
 	current_post INTEGER
 );

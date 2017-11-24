@@ -9,7 +9,7 @@ Export variables:
 >>export FLASK_DEBUG=1
 
 Initialize database (required if and only if the shcema is changed):
->>flask init
+>>flask initdb
 
 Run application:
 >>flask run

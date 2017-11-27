@@ -14,19 +14,19 @@ class AccountDao(Dao):
 			return None
 		return row['password'] == password
 
-	def add_account(self, id, password, name):
+	def add_account(self, id, password, name, gender, age, department = None, college = None):
 		db = self.get_db()
 		respond = db.execute("SELECT verified FROM accounts WHERE id=:id", {'id': id})
 		row = respond.fetchone()
 		code = str(uuid.uuid4())
 		if row is None:
-			db.execute("INSERT INTO accounts (id, password, name, reputation_sum, reputation_num, verified, code) VALUES (:id, :password, :name, 8, 2, 0, :code)",
-					{'id': id, 'password': password, 'name': name, 'code': code})
+			db.execute("INSERT INTO accounts (id, password, name, gender, age, department, college, reputation_sum, reputation_num, verified, code) VALUES (:id, :password, :name, :gender, :age, :department, :college, 8, 2, 0, :code)",
+					{'id': id, 'password': password, 'name': name, 'gender': gender, 'age': age, 'department': department, 'college':college, 'code': code})
 			db.commit()
 			return code
 		if row['verified'] == 0:
-			db.execute("UPDATE accounts SET password=:password, name=:name, code=:code WHERE id=:id",
-					{'id': id, 'password': password, 'name': name, 'code': code})
+			db.execute("UPDATE accounts SET password=:password, name=:name, gender=:gender, age=:age, department=:department, college=:college, code=:code WHERE id=:id",
+					{'id': id, 'password': password, 'name': name, 'gender': gender, 'age': age, 'department': department, 'college':college, 'code': code})
 			db.commit()
 			return code
 		return False

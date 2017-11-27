@@ -37,7 +37,7 @@ def login():
 @bp.route('/logout', methods=['GET'])
 def logout():
 	session.pop('logged_in', None)
-	return redirect(url_for('PetCare.login'))
+	return redirect(url_for('PetCare.homepage'))
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():

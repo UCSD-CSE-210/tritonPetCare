@@ -16,9 +16,10 @@ def close_db():
 
 @bp.route('/', methods=['GET'])
 def homepage():
-	if session.get('logged_in') is None:
-		return redirect(url_for('PetCare.login'))
-	return redirect(url_for('PetCare.list_posts'))
+	# if session.get('logged_in') is None:
+	# 	return redirect(url_for('PetCare.login'))
+	# return redirect(url_for('PetCare.list_posts'))
+	return render_template('home_page.html')
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -31,7 +32,7 @@ def login():
 	if not isPasswordCorrect:
 		return render_template('login.html', error="Wrong Password")
 	session['logged_in'] = request.form['user']
-	return redirect(url_for('PetCare.list_posts'))
+	return redirect(url_for('PetCare.homepage'))
 
 @bp.route('/logout', methods=['GET'])
 def logout():

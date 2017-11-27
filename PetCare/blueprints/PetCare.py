@@ -44,7 +44,7 @@ def register():
 	if request.method == 'GET':
 		return render_template('register.html', error=None)
 	accountDao = AccountDao()
-	code = accountDao.add_account(request.form['user'], request.form['password'], request.form['name'])
+	code = accountDao.add_account(request.form['user'], request.form['password'], request.form['name'], request.form['gender'], request.form['age'])
 	if not code:
 		return render_template('register.html', error="User Account Existed Already")
 	# TODO: send email with authentication url ending with code

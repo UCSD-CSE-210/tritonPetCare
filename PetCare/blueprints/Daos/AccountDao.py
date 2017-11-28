@@ -14,19 +14,19 @@ class AccountDao(Dao):
 			return None
 		return row['password'] == password
 
-	def add_account(self, id, password, name):
+	def add_account(self, id, password, name, gender, age, department = None, college = None):
 		db = self.get_db()
 		respond = db.execute("SELECT verified FROM accounts WHERE id=:id", {'id': id})
 		row = respond.fetchone()
 		code = str(uuid.uuid4())
 		if row is None:
-			db.execute("INSERT INTO accounts (id, password, name, reputation_sum, reputation_num, verified, code) VALUES (:id, :password, :name, 8, 2, 0, :code)",
-					{'id': id, 'password': password, 'name': name, 'code': code})
+			db.execute("INSERT INTO accounts (id, password, name, gender, age, department, college, reputation_sum, reputation_num, verified, code) VALUES (:id, :password, :name, :gender, :age, :department, :college, 8, 2, 0, :code)",
+					{'id': id, 'password': password, 'name': name, 'gender': gender, 'age': age, 'department': department, 'college':college, 'code': code})
 			db.commit()
 			return code
 		if row['verified'] == 0:
-			db.execute("UPDATE accounts SET password=:password, name=:name, code=:code WHERE id=:id",
-					{'id': id, 'password': password, 'name': name, 'code': code})
+			db.execute("UPDATE accounts SET password=:password, name=:name, gender=:gender, age=:age, department=:department, college=:college, code=:code WHERE id=:id",
+					{'id': id, 'password': password, 'name': name, 'gender': gender, 'age': age, 'department': department, 'college':college, 'code': code})
 			db.commit()
 			return code
 		return False
@@ -64,6 +64,12 @@ class AccountDao(Dao):
 		db.execute("UPDATE accounts SET reputation_sum=:reputation_sum, reputation_num=:reputation_num WHERE id=:id",
 					{'id': id, 'reputation_sum': row['reputation_sum'] + score, 'reputation_num': reputation_num + 1})
 		db.commit()
+
+	def get_account_all_info(self, id):
+		db = self.get_db()
+		respond = db.execute("SELECT * FROM accounts WHERE id=:id", {'id': id})
+		row = respond.fetchone()
+		return row
 
 	def remove_account_post(self, id, postId):
 		db = self.get_db()

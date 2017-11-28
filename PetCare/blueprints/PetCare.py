@@ -44,7 +44,7 @@ def register():
 	if request.method == 'GET':
 		return render_template('register.html', error=None)
 	accountDao = AccountDao()
-	code = accountDao.add_account(request.form['user'], request.form['password'], request.form['name'], request.form['gender'], request.form['age'])
+	code = accountDao.add_account(request.form['user'], request.form['password'], request.form['name'], request.form['gender'], request.form['age'], request.form['department'], request.form['college'])
 	if not code:
 		return render_template('register.html', error="User Account Existed Already")
 	# TODO: send email with authentication url ending with code
@@ -58,6 +58,18 @@ def authenticate():
 		return render_template('login.html', error="Authentication Failed")
 	session['logged_in'] = request.args['user']
 	return redirect(url_for('PetCare.list_posts'))
+
+@bp.route('/profile', methods=['GET'])
+def profile():
+	if session.get('logged_in') is None:
+		return redirect(url_for('PetCare.login'))
+	accountDao = AccountDao()
+	info = accountDao.get_account_all_info(session['logged_in'])
+	postDao = PostDao()
+	posts = postDao.list_all_posts(round(reputation))
+	[change_time_format(dict(post)) for post in posts]
+	return render_template('profile.html', posts=posts)
+
 
 @bp.route('/list_posts', methods=['GET'])
 def list_posts():

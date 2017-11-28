@@ -8,8 +8,9 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <link href="../static/Maxim/css/bootstrap-responsive.css" rel="stylesheet">
-  <link href="../static/Maxim/css/style.css" rel="stylesheet">
   <link href="../static/Maxim/color/default.css" rel="stylesheet">
+  <link href="../static/Maxim/css/style.css" rel="stylesheet">
+  <link href="../static/Maxim/style.cc" rel="stylesheet">
   <link rel="shortcut icon" href="../static/Maximum/img/dog_head.png">
   <!-- =======================================================
     Theme Name: Maxim
@@ -35,7 +36,8 @@
               <li><a title="services" href="#services">Services</a></li>
               <li><a href="{{ url_for('PetCare.list_posts') }}">Posts</a></li>
              {% if session.logged_in %}
-              <li><a href="#">Profile</a></li>
+              <li><a href="{{url_for('PetCare.profile')}}">Profile</a></li>
+              <li><a href="{{url_for('PetCare.logout')}}">Logout</a>></li>
              {% else %}
               <li><a href="{{ url_for('PetCare.login') }}">Signin</a></li>
              {% endif %}

@@ -59,6 +59,18 @@ def authenticate():
 	session['logged_in'] = request.args['user']
 	return redirect(url_for('PetCare.list_posts'))
 
+@bp.route('/profile', methods=['GET'])
+def profile():
+	if session.get('logged_in') is None:
+		return redirect(url_for('PetCare.login'))
+	accountDao = AccountDao()
+	info = accountDao.get_account_all_info(session['logged_in'])
+	postDao = PostDao()
+	posts = postDao.list_all_posts(round(reputation))
+	[change_time_format(dict(post)) for post in posts]
+	return render_template('profile.html', posts=posts)
+
+
 @bp.route('/list_posts', methods=['GET'])
 def list_posts():
 	if session.get('logged_in') is None:

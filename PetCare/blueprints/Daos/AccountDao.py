@@ -65,6 +65,12 @@ class AccountDao(Dao):
 					{'id': id, 'reputation_sum': row['reputation_sum'] + score, 'reputation_num': reputation_num + 1})
 		db.commit()
 
+	def get_account_all_info(self, id):
+		db = self.get_db()
+		respond = db.execute("SELECT * FROM accounts WHERE id=:id", {'id': id})
+		row = respond.fetchone()
+		return row
+
 	def remove_account_post(self, id, postId):
 		db = self.get_db()
 		respond = db.execute("SELECT current_post FROM accounts WHERE id=:id", {'id': id})

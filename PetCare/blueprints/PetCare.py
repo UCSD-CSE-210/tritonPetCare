@@ -74,24 +74,29 @@ def list_posts():
 def edit_post():
 	if session.get('logged_in') is None:
 		return redirect(url_for('PetCare.login'))
+
 	accountDao = AccountDao()
 	postDao = PostDao()
 	postId = accountDao.get_account_post(session['logged_in'])
+
 	if request.method == 'GET':
 		if postId is None:
 			return render_template('edit_post.html', error=None)
 		post = postDao.get_post(postId)
 		# TODO: return with post information shown
 		return render_template('edit_post.html', error=None)
+	
 	postInfo = make_post_info(session['logged_in'], request.form)
 	if not postInfo:
 		return render_template('edit_post.html', error="Required Informaion Missing")
+	
 	if postId is None:
 		postId = postDao.add_post(postInfo)
 		accountDao.update_account_post(session['logged_in'], postId)
 	else:
 		postInfo['id'] = postId
 		postDao.update_post(postInfo)
+	
 	return redirect(url_for('PetCare.list_posts'))
 
 @bp.route('/view_post', methods=['GET'])
@@ -123,11 +128,35 @@ def interest_post():
 		# 	sendEmail()
 	return redirect(url_for('PetCare.list_posts'))
 
+@bp.route('/create_post', methods=['GET', 'POST'])
+def create_post():
+	if request.method == 'GET':
+		return render_template('create_post.html', error=None)
+
+	postInfo = make_post_info(session['logged_in'], request.form)
+	
+	if not postInfo:
+		return render_template('create_post.html', error='Fields missing')
+
+	postDao = PostDao()
+	postId = postDao.add_post(postInfo)
+
+	return redirect(url_for('PetCare.list_posts'))
+
 def make_post_info(id, input):
 	postInfo = input.copy()
+
 	if not ('name' in postInfo and 'species' in postInfo and 'gender' in postInfo and 'age' in postInfo and 'vaccination'in postInfo
 			and 'start_date'in postInfo and 'end_date' in postInfo and 'criteria' in postInfo):
 		return False
+
+	a = len(postInfo['name']) == 0
+	b = len(postInfo['vaccination']) == 0
+	c = len(postInfo['start_date']) == 0
+	d = len(postInfo['end_date']) == 0
+	if a or b or c or d:
+		return False
+
 	postInfo['owner_id'] = id
 	postInfo['start_date'] = int(time.mktime(time.strptime(postInfo['start_date'], '%Y-%m-%d')))
 	postInfo['end_date'] = int(time.mktime(time.strptime(postInfo['end_date'], '%Y-%m-%d')))
@@ -139,4 +168,23 @@ def change_time_format(postInfo):
 	postInfo['end_date'] = time.strftime('%Y-%m-%d', time.localtime(postInfo['end_date']))
 	if 'post_date' in postInfo:
 		postInfo['post_date'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(postInfo['post_date']))
+
+
+# if postInfo['name'] is None: print 'name is None'
+# if postInfo['species'] is None: print 'species is None'
+# if postInfo['gender'] is None: print 'gender is None'
+# if postInfo['age'] is None: print 'age is None'
+# if postInfo['vaccination'] is None: print 'vaccination is None'
+# if postInfo['start_date'] is None: print 'start_date is None'
+# if postInfo['end_date'] is None: print 'end_date is None'
+# if postInfo['criteria'] is None: print 'criteria is None'
+
+# print postInfo['name'], len(postInfo['name']), 'name'
+# print postInfo['species'], len(postInfo['species']), 'species' 
+# print postInfo['gender'], len(postInfo['gender']), 'gender'
+# print postInfo['age'], len(postInfo['age']), 'age'
+# print postInfo['vaccination'], len(postInfo['vaccination']), 'vaccination'
+# print postInfo['start_date'], len(postInfo['start_date']), 'start_date'
+# print postInfo['end_date'], len(postInfo['end_date']), 'end_date'
+# print postInfo['criteria'], len(postInfo['criteria']), 'criteria'
 

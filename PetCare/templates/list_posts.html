@@ -1,14 +1,68 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if session.logged_in %}
-    <ul class=posts>
-    {% for post in posts %}
-      <li><h2>{{ post.name }}</h2>
-      	{{ post.species + '\t' + post.start_date|string + '\t' + post.end_date|string }}
-      	<a href="{{ url_for('PetCare.view_post') + '?id=' + post.id|string }}">link</a>
-    {% else %}
-      <li><em>Unbelievable.  No posts here so far</em>
-    {% endfor %}
-    </ul>
-  {% endif %}
+    {% if session.logged_in %}
+        <ul class=posts>
+            {% for post in posts %}
+                <li><h2>{{ post.name }}</h2>
+                    {{ post.species + '\t' + post.start_date|string + '\t' + post.end_date|string }}
+                    <a href="{{ url_for('PetCare.view_post') + '?id=' + post.id|string }}">link</a>
+                    {% else %}
+                <li><em>Unbelievable.  No posts here so far</em>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <section id="blog" class="section">
+		<div class="container">
+			<h4>Available Posts</h4>
+			<!-- Three columns -->
+			<div class="row">
+                {% for post in posts %}
+                    <div class="span3">
+                        <div class="home-post">
+                            <div class="post-image">
+                                <img class="max-img" src="../static/Maxim/img/blog/img1.jpg" alt="" />
+                            </div>
+                            <div class="post-meta">
+                                <i class="icon-calendar icon-2x"></i>
+                                <span class="date">{{post.start_date|string}}</span>
+                                <span class="date">{{post.end_date|string}}</span>
+    {#							<span class="tags"><a href="#">Design</a>, <a href="#">Blog</a></span>#}
+                            </div>
+                            <div class="entry-content">
+                                <h5><strong><a href="#">{{ post.name }}</a></strong></h5>
+                                <p>
+                                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. &hellip;
+                                </p>
+                                <a href="#" class="more">Read more</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+{#				<div class="span3">#}
+{#					<div class="home-post">#}
+{#						<div class="post-image">#}
+{#							<img class="max-img" src="../static/Maxim/img/blog/img4.jpg" alt="" />#}
+{#						</div>#}
+{#						<div class="post-meta">#}
+{#							<i class="icon-file icon-2x"></i>#}
+{#							<span class="date">June 27, 2013</span>#}
+{#							<span class="tags"><a href="#">News</a>, <a href="#">Tutorial</a></span>#}
+{#						</div>#}
+{#						<div class="entry-content">#}
+{#							<h5><strong><a href="#">Free icon set</a></strong></h5>#}
+{#							<p>#}
+{#								Lorem Ipsum is simply dummy text of the printing and typesetting industry. &hellip;#}
+{#							</p>#}
+{#							<a href="#" class="more">Read more</a>#}
+{#						</div>#}
+{#					</div>#}
+{#				</div>#}
+			</div>
+			<div class="blankdivider30"></div>
+			<div class="aligncenter">
+				<a href="#" class="btn btn-large btn-theme">More blog post</a>
+			</div>
+		</div>
+	</section>
 {% endblock %}

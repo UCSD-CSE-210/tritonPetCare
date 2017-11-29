@@ -15,6 +15,11 @@ class PostDao(Dao):
 		respond = db.execute("SELECT * FROM posts WHERE id=:id", {'id': id})
 		return respond.fetchone()
 
+	def get_user_post(self, user_id):
+		db = self.get_db()
+		respond = db.execute("SELECT * FROM posts WHERE owner_id=:id", {'id': user_id})
+		return respond.fetchall()
+
 	def add_post(self, postInfo):
 		db = self.get_db()
 		query = ("INSERT INTO posts (name, species, breed, gender, age, vaccination, vaccination_opt, start_date, end_date, criteria, notes, "

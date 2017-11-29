@@ -66,9 +66,10 @@ def profile():
 	accountDao = AccountDao()
 	info = accountDao.get_account_all_info(session['logged_in'])
 	postDao = PostDao()
-	posts = postDao.list_all_posts(round(reputation))
-	[change_time_format(dict(post)) for post in posts]
-	return render_template('profile.html', posts=posts)
+	print session['logged_in']
+	posts = postDao.get_user_post(session['logged_in'])
+	print posts
+	return render_template('profile.html', info=info, posts=posts)
 
 
 @bp.route('/list_posts', methods=['GET'])

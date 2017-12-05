@@ -43,8 +43,10 @@ class PostDao(Dao):
 
 	def remove_post(self, id):
 		db = self.get_db()
+		respond = db.execute("SELECT image FROM posts WHERE id=:id", {'id': id})
 		db.execute("DELETE FROM posts WHERE id=:id", {'id': id})
 		db.commit()
+		return respond.fetchone()['image']
 
 	def add_interest(self, id, user):
 		db = self.get_db()

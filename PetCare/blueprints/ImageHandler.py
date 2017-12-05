@@ -12,3 +12,7 @@ class ImageHandler(object):
 	@staticmethod
 	def get_image_full_path(filename):
 		return "../static/images/" + filename
+
+	@staticmethod
+	def delete_image(filename):
+		os.remove(os.path.join(current_app.config['UPLOADED_IMAGES_DEST'], filename))

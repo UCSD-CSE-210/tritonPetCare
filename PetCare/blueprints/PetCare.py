@@ -69,7 +69,6 @@ def profile():
 	print posts
 	return render_template('profile.html', info=info, posts=posts)
 
-
 @bp.route('/list_posts', methods=['GET'])
 def list_posts():
 	if session.get('logged_in') is None:
@@ -108,8 +107,8 @@ def edit_post():
 	postId = accountDao.get_account_post(session['logged_in'])
 	if postId is None:
 		return redirect(url_for('PetCare.create_post'))
+	prevPost = postDao.get_post(postId)
 	if request.method == 'GET':
-		post = postDao.get_post(postId)
 		# TODO: return with post information shown
 		return render_template('edit_post.html', error=None)
 	postInfo = make_post_info(session['logged_in'], request)
@@ -117,6 +116,8 @@ def edit_post():
 		return render_template('edit_post.html', error="Required Informaion Missing")
 	postInfo['id'] = postId
 	postDao.update_post(postInfo)
+	if 'image' in request.files:
+		ImageHandler.delete_image(prevPost['image'])
 	return redirect(url_for('PetCare.list_posts'))
 
 @bp.route('/view_post', methods=['GET'])
@@ -136,7 +137,8 @@ def delete_post():
 		if not ownerMatched:
 			return redirect(url_for('PetCare.list_posts'))
 		postDao = PostDao()
-		postDao.remove_post(request.form['id'])
+		prevImage = postDao.remove_post(request.form['id'])
+		ImageHandler.delete_image(prevImage)
 	return redirect(url_for('PetCare.list_posts'))
 
 @bp.route('/interest_post', methods=['POST'])
@@ -161,7 +163,8 @@ def make_post_info(id, input):
 	postInfo['start_date'] = int(time.mktime(time.strptime(postInfo['start_date'], '%Y-%m-%d')))
 	postInfo['end_date'] = int(time.mktime(time.strptime(postInfo['end_date'], '%Y-%m-%d')))
 	postInfo['post_date'] = int(time.time())
-	postInfo['image'] = ImageHandler.save_image(input.files['image'])
+	if 'image' in input.files:
+		postInfo['image'] = ImageHandler.save_image(input.files['image'])
 
 	return postInfo
 

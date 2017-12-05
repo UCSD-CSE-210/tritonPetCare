@@ -21,11 +21,11 @@
                     <div class="span3">
                         <div class="home-post">
                             <div class="post-image">
-                                <img class="max-img" src="../static/Maxim/img/blog/img1.jpg" alt="" />
+                                <img class="max-img" src="{{post.image}}" />
                             </div>
                             <div class="post-meta">
                                 <i class="icon-calendar icon-2x"></i>
-                                <span class="date">{{post.start_date|string}}</span>
+                                <span class="date">{{post.start_date|string}}-</span>
                                 <span class="date">{{post.end_date|string}}</span>
     {#							<span class="tags"><a href="#">Design</a>, <a href="#">Blog</a></span>#}
                             </div>

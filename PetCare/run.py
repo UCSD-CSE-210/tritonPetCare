@@ -9,7 +9,8 @@ app.config.update(dict(
 	DATABASE = os.path.join(app.root_path, 'PetCare.db'),
 	SECRET_KEY = 'SECRET_KEY',
 	USERNAME = 'admin',
-	PASSWORD = 'password'
+	PASSWORD = 'password',
+	UPLOADED_IMAGES_DEST = "PetCare/static/images/"
 ))
 app.config.from_envvar('PETCARE_SETTINGS', silent=True)
 

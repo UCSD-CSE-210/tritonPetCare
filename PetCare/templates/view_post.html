@@ -4,6 +4,7 @@
     <ul class=post>
     <li><h2>{{ post.name }}</h2>
     	{{ post.species + '\t' + post.start_date|string + '\t' + post.end_date|string }}
+      <img class="max-img" src="{{ post.image }}" width="500" height="377"/>
     {% if session.logged_in == post.owner_id %}
       <a href="{{ url_for('PetCare.edit_post') }}">Edit</a>
       <form action="{{ url_for('PetCare.delete_post') }}" method=post>

@@ -4,6 +4,7 @@ from flask import Blueprint, request, session, redirect, url_for, render_templat
 from Daos.Dao import Dao
 from Daos.AccountDao import AccountDao
 from Daos.PostDao import PostDao
+from ImageHandler import ImageHandler
 
 bp = Blueprint('PetCare', __name__)
 
@@ -16,9 +17,6 @@ def close_db():
 
 @bp.route('/', methods=['GET'])
 def homepage():
-	# if session.get('logged_in') is None:
-	# 	return redirect(url_for('PetCare.login'))
-	# return redirect(url_for('PetCare.list_posts'))
 	return render_template('home_page.html')
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -71,7 +69,6 @@ def profile():
 	print posts
 	return render_template('profile.html', info=info, posts=posts)
 
-
 @bp.route('/list_posts', methods=['GET'])
 def list_posts():
 	if session.get('logged_in') is None:
@@ -80,36 +77,47 @@ def list_posts():
 	reputation = accountDao.get_account_reputation(session['logged_in'])
 	postDao = PostDao()
 	posts = postDao.list_all_posts(round(reputation))
-	[change_time_format(dict(post)) for post in posts]
-	return render_template('list_posts.html', posts=posts)
+	postInfos = [change_time_format(dict(post)) for post in posts]
+	return render_template('list_posts.html', posts=postInfos)
+
+@bp.route('/create_post', methods=['GET', 'POST'])
+def create_post():
+	if session.get('logged_in') is None:
+		return redirect(url_for('PetCare.login'))
+	accountDao = AccountDao()
+	postDao = PostDao()
+	postId = accountDao.get_account_post(session['logged_in'])
+	if postId is not None:
+		return redirect(url_for('PetCare.edit_post'))
+	if request.method == 'GET':
+		return render_template('create_post.html', error=None)
+	postInfo = make_post_info(session['logged_in'], request)
+	if not postInfo:
+		return render_template('create_post.html', error="Required Informaion Missing")
+	postId = postDao.add_post(postInfo)
+	accountDao.update_account_post(session['logged_in'], postId)
+	return redirect(url_for('PetCare.list_posts'))
 
 @bp.route('/edit_post', methods=['GET', 'POST'])
 def edit_post():
 	if session.get('logged_in') is None:
 		return redirect(url_for('PetCare.login'))
-
 	accountDao = AccountDao()
 	postDao = PostDao()
 	postId = accountDao.get_account_post(session['logged_in'])
-
+	if postId is None:
+		return redirect(url_for('PetCare.create_post'))
+	prevPost = postDao.get_post(postId)
 	if request.method == 'GET':
-		if postId is None:
-			return render_template('edit_post.html', error=None)
-		post = postDao.get_post(postId)
 		# TODO: return with post information shown
 		return render_template('edit_post.html', error=None)
-	
-	postInfo = make_post_info(session['logged_in'], request.form)
+	postInfo = make_post_info(session['logged_in'], request)
 	if not postInfo:
 		return render_template('edit_post.html', error="Required Informaion Missing")
-	
-	if postId is None:
-		postId = postDao.add_post(postInfo)
-		accountDao.update_account_post(session['logged_in'], postId)
-	else:
-		postInfo['id'] = postId
-		postDao.update_post(postInfo)
-	
+	postInfo['id'] = postId
+	postDao.update_post(postInfo)
+	if 'image' in request.files:
+		ImageHandler.delete_image(prevPost['image'])
 	return redirect(url_for('PetCare.list_posts'))
 
 @bp.route('/view_post', methods=['GET'])
@@ -118,8 +126,8 @@ def view_post():
 		return redirect(url_for('PetCare.login'))
 	postDao = PostDao()
 	post = postDao.get_post(request.args['id'])
-	change_time_format(dict(post))
-	return render_template('view_post.html', post=post)
+	postInfo = change_time_format(dict(post))
+	return render_template('view_post.html', post=postInfo)
 
 @bp.route('/delete_post', methods=['POST'])
 def delete_post():
@@ -129,7 +137,8 @@ def delete_post():
 		if not ownerMatched:
 			return redirect(url_for('PetCare.list_posts'))
 		postDao = PostDao()
-		postDao.remove_post(request.form['id'])
+		prevImage = postDao.remove_post(request.form['id'])
+		ImageHandler.delete_image(prevImage)
 	return redirect(url_for('PetCare.list_posts'))
 
 @bp.route('/interest_post', methods=['POST'])
@@ -141,46 +150,31 @@ def interest_post():
 		# 	sendEmail()
 	return redirect(url_for('PetCare.list_posts'))
 
-@bp.route('/create_post', methods=['GET', 'POST'])
-def create_post():
-	if request.method == 'GET':
-		return render_template('create_post.html', error=None)
-
-	postInfo = make_post_info(session['logged_in'], request.form)
-	
-	if not postInfo:
-		return render_template('create_post.html', error='Fields missing')
-
-	postDao = PostDao()
-	postId = postDao.add_post(postInfo)
-
-	return redirect(url_for('PetCare.list_posts'))
-
 def make_post_info(id, input):
-	postInfo = input.copy()
+	postInfo = input.form.copy()
 
 	if not ('name' in postInfo and 'species' in postInfo and 'gender' in postInfo and 'age' in postInfo and 'vaccination'in postInfo
 			and 'start_date'in postInfo and 'end_date' in postInfo and 'criteria' in postInfo):
 		return False
-
-	a = len(postInfo['name']) == 0
-	b = len(postInfo['vaccination']) == 0
-	c = len(postInfo['start_date']) == 0
-	d = len(postInfo['end_date']) == 0
-	if a or b or c or d:
+	if len(postInfo['name']) * len(postInfo['vaccination']) * len(postInfo['start_date']) * len(postInfo['end_date']) == 0:
 		return False
 
 	postInfo['owner_id'] = id
 	postInfo['start_date'] = int(time.mktime(time.strptime(postInfo['start_date'], '%Y-%m-%d')))
 	postInfo['end_date'] = int(time.mktime(time.strptime(postInfo['end_date'], '%Y-%m-%d')))
 	postInfo['post_date'] = int(time.time())
+	if 'image' in input.files:
+		postInfo['image'] = ImageHandler.save_image(input.files['image'])
+
 	return postInfo
 
 def change_time_format(postInfo):
-	postInfo['start_date'] = time.strftime('%Y-%m-%d', time.localtime(postInfo['start_date']))
-	postInfo['end_date'] = time.strftime('%Y-%m-%d', time.localtime(postInfo['end_date']))
+	postInfo['start_date'] = time.strftime('%m/%d/%Y', time.localtime(postInfo['start_date']))
+	postInfo['end_date'] = time.strftime('%m/%d/%Y', time.localtime(postInfo['end_date']))
 	if 'post_date' in postInfo:
-		postInfo['post_date'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(postInfo['post_date']))
+		postInfo['post_date'] = time.strftime('%m/%d/%Y %H:%M:%S', time.localtime(postInfo['post_date']))
+	postInfo['image'] = ImageHandler.get_image_full_path(postInfo['image'])
+	return postInfo
 
 
 # if postInfo['name'] is None: print 'name is None'

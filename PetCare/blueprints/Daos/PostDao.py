@@ -7,7 +7,7 @@ class PostDao(Dao):
 
 	def list_all_posts(self, reputation):
 		db = self.get_db()
-		respond = db.execute("SELECT id, name, species, start_date, end_date FROM posts WHERE criteria<=:reputation", {'reputation': reputation})
+		respond = db.execute("SELECT id, name, species, start_date, end_date, image FROM posts WHERE criteria<=:reputation", {'reputation': reputation})
 		return respond.fetchall()
 
 	def get_post(self, id):
@@ -23,8 +23,8 @@ class PostDao(Dao):
 	def add_post(self, postInfo):
 		db = self.get_db()
 		query = ("INSERT INTO posts (name, species, breed, gender, age, vaccination, vaccination_opt, start_date, end_date, criteria, notes, "
-				"owner_id, post_date) VALUES (:name, :species, :breed, :gender, :age, :vaccination, :vaccination_opt, :start_date, :end_date, "
-				":criteria, :notes, :owner_id, :post_date)"
+				"image, owner_id, post_date) VALUES (:name, :species, :breed, :gender, :age, :vaccination, :vaccination_opt, :start_date, "
+				":end_date, :criteria, :notes, :image, :owner_id, :post_date)"
 		)
 		cursor = db.cursor()
 		cursor.execute(query, postInfo)
@@ -35,7 +35,7 @@ class PostDao(Dao):
 		db = self.get_db()
 		query = ("UPDATE posts SET name=:name, species=:species, breed=:breed, gender=:gender, age=:age, vaccination=:vaccination, "
 				"vaccination_opt=:vaccination_opt, start_date=:start_date, end_date=:end_date, criteria=:criteria, notes=:notes, "
-				"post_date=:post_date WHERE id=:id"
+				"image=:image, post_date=:post_date WHERE id=:id"
 		)
 		db.execute(query, postInfo)
 		db.commit()
@@ -43,8 +43,10 @@ class PostDao(Dao):
 
 	def remove_post(self, id):
 		db = self.get_db()
+		respond = db.execute("SELECT image FROM posts WHERE id=:id", {'id': id})
 		db.execute("DELETE FROM posts WHERE id=:id", {'id': id})
 		db.commit()
+		return respond.fetchone()['image']
 
 	def add_interest(self, id, user):
 		db = self.get_db()

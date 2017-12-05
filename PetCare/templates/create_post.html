@@ -2,7 +2,7 @@
 {% block body %}
   <h2>Post</h2>
   {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
-  <form action="{{ url_for('PetCare.create_post') }}" method=post>
+  <form action="{{ url_for('PetCare.create_post') }}" enctype="multipart/form-data" method=post>
     <dl>
       <dt>Name:
       <dd><input type=text name=name>
@@ -53,6 +53,8 @@
         </select>
       <dt>Notes:
       <dd><input type=text name=notes>
+      <dt>Image:
+      <dd><input type=file name=image>
       <dt><input type=submit value=Submit>
     </dl>
   </form>

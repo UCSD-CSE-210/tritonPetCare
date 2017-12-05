@@ -12,6 +12,7 @@ CREATE TABLE posts (
 	end_date INTEGER NOT NULL,
 	criteria INTEGER NOT NULL,
 	notes TEXT,
+	image TEXT NOT NULL,
 	owner_id TEXT NOT NULL,
 	post_date INTEGER NOT NULL,
 	interested TEXT

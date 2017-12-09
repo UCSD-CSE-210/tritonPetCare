@@ -5,11 +5,10 @@
   <form action="{{ url_for('PetCare.login') }}" method=post>
     <dl>
       <dt>Username:
-      <dd><input type=text name=user>
+      <dd><input type=text name=email>
       <dt>Password:
       <dd><input type=password name=password>
       <dt><input type=submit value=Login style="width: 200px; margin-left: 40%">
-      <dt><input type=submit value=Login>
     </dl>
   </form>
   <a href="{{ url_for('PetCare.register') }}">register</a>

@@ -5,13 +5,15 @@
   <form action="{{ url_for('PetCare.register') }}" method=post>
     <dl>
       <dt>UCSD Email:
-      <dd><input type=text name=user>@ucsd.edu
+      <dd><input type=text name=email>@ucsd.edu
       <dt>Password:
       <dd><input type=password name=password>
       <dt>Name:
       <dd><input type=text name=name>
       <dt>Gender:
-      <dd><input type=text name=gender>
+      <dd>
+        <input type=radio name=gender value=1 checked>Male
+        <input type=radio name=gender value=0>Female
       <dt>Age:
       <dd><input type=number name=age>
       <dt>Department:
@@ -19,7 +21,6 @@
       <dt>College:
       <dd><input type=text name=college>
       <dt><input type=submit value=Submit>
-
     </dl>
   </form>
 {% endblock %}

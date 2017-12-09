@@ -9,13 +9,13 @@
       <a href="{{ url_for('PetCare.edit_post') }}">Edit</a>
       <form action="{{ url_for('PetCare.delete_post') }}" method=post>
       <dl>
-        <input type=hidden name=id value="{{ post.id }}">
+        <input type=hidden name=postId value="{{ post.id }}">
         <dt><input type=submit value=Delete>
       </dl>
     {% else %}
       <form action="{{ url_for('PetCare.interest_post') }}" method=post>
       <dl>
-        <input type=hidden name=id value="{{ post.id }}">
+        <input type=hidden name=postId value="{{ post.id }}">
         <dt><input type=submit value="I'm intrested!!!">
       </dl>
     {% endif %}

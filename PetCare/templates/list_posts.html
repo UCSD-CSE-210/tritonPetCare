@@ -5,7 +5,7 @@
             {% for post in posts %}
                 <li><h2>{{ post.name }}</h2>
                     {{ post.species + '\t' + post.start_date|string + '\t' + post.end_date|string }}
-                    <a href="{{ url_for('PetCare.view_post') + '?id=' + post.id|string }}">link</a>
+                    <a href="{{ url_for('PetCare.view_post') + '?postId=' + post.id|string }}">link</a>
                     {% else %}
                 <li><em>Unbelievable.  No posts here so far</em>
             {% endfor %}
@@ -21,7 +21,7 @@
                     <div class="span3">
                         <div class="home-post">
                             <div class="post-image">
-                                <img class="max-img" src="{{post.image}}" />
+                                <img class="max-img" src="{{post.image1}}" />
                             </div>
                             <div class="post-meta">
                                 <i class="icon-calendar icon-2x"></i>

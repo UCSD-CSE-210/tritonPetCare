@@ -7,13 +7,16 @@ CREATE TABLE posts (
 	gender INTEGER NOT NULL,
 	age INTEGER NOT NULL,
 	vaccination TEXT NOT NULL,
-	vaccination_opt TEXT,
 	start_date INTEGER NOT NULL,
 	end_date INTEGER NOT NULL,
 	criteria INTEGER NOT NULL,
 	notes TEXT,
-	image TEXT NOT NULL,
+	image1 TEXT NOT NULL,
+	image2 TEXT,
+	image3 TEXT,
 	owner_id TEXT NOT NULL,
 	post_date INTEGER NOT NULL,
-	interested TEXT
+	interested TEXT,
+	match TEXT,
+	review INTEGER
 );

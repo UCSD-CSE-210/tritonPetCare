@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <ul class=post>
+    <li><h2>{{ account.name }}</h2>
+    	{{ account.id + '\t' }}
+    {% if isInterested %}
+      <form action="{{ url_for('PetCare.match') }}" method=post>
+      <dl>
+        <dt><input type=submit value=Approve>
+      </dl>
+    {% endif %}
+    </ul>
+  {% endif %}
+{% endblock %}

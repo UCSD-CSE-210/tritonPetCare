@@ -37,7 +37,7 @@
               <li><a href="{{ url_for('PetCare.list_posts') }}">Posts</a></li>
              {% if session.logged_in %}
               <li><a href="{{ url_for('PetCare.profile', userId=session.logged_in) }}">Profile</a></li>
-              <li><a href="{{ url_for('PetCare.logout') }}">Logout</a>></li>
+              <li><a href="{{ url_for('PetCare.logout') }}">Logout</a></li>
              {% else %}
               <li><a href="{{ url_for('PetCare.login') }}">Signin</a></li>
              {% endif %}

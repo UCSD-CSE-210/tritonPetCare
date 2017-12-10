@@ -58,13 +58,13 @@ class PostDao(Dao):
 
 	def add_interest(self, postId, userId):
 		db = self.get_db()
-		respond = db.execute("SELECT interested FROM posts WHERE id=:id", {'id': postId})
-		interestedUsers = respond.fetchone()['interested']
-		interestedUsers = [] if interestedUsers is None else str(interestedUsers).split(',')
+		respond = db.execute("SELECT interested, owner_id FROM posts WHERE id=:id", {'id': postId})
+		row = respond.fetchone()
+		interestedUsers = [] if row['interested'] is None else str(row['interested']).split(',')
 		if userId in interestedUsers:
 			return False;
 		interestedUsers.append(userId)
 		db.execute("UPDATE posts SET interested=:interested WHERE id=:id", {'id': postId, 'interested': ','.join(interestedUsers)})
 		db.commit()
-		return True
+		return row['owner_id']
 	

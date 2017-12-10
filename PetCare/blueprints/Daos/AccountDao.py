@@ -73,6 +73,12 @@ class AccountDao(Dao):
 		db.commit()
 		return True
 
+	def get_account_email(self, userId):
+		db = self.get_db()
+		respond = db.execute("SELECT email FROM accounts WHERE id=:id", {'id': userId})
+		return respond.fetchone()['email']
+		db.commit()
+
 	def check_account_id_password(self, userId, password):
 		db = self.get_db()
 		respond = db.execute("SELECT password FROM accounts WHERE id=:id", {'id': userId})

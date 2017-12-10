@@ -1,15 +1,20 @@
 {% extends "layout.html" %}
 {% block body %}
-  <h2>Login</h2>
   {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+
+  <div class="logo" style="width: 300px; margin-left: 40%; margin-top: 5%">
+    <img src="../static/Maxim/img/dog_head.png" alt="" />
+  </div>
+  
   <form action="{{ url_for('PetCare.login') }}" method=post>
     <dl>
-      <dt>Username:
-      <dd><input type=text name=email>
-      <dt>Password:
-      <dd><input type=password name=password>
-      <dt><input type=submit value=Login style="width: 200px; margin-left: 40%">
+      <dt style="width: 200px; margin-left: 43%; margin-top: 2%">Username:
+      <dd><input type=text name=email style="width: 200px; margin-left: 42.5%">
+      <dt style="width: 200px; margin-left: 43%">Password:
+      <dd><input type=password name=password style="width: 200px; margin-left: 42.5%">
+      <dt><input class="btn btn-large btn-theme" type=submit value=Login style="width: 200px; margin-left: 43.5%; margin-top: 2%">
     </dl>
   </form>
-  <a href="{{ url_for('PetCare.register') }}">register</a>
+  
+  <a class="btn btn-large btn-theme" style="width: 150px; height: 27px; margin-left: 43.5%; margin-bottom: 4%" href="{{ url_for('PetCare.register') }}">Register</a>
 {% endblock %}

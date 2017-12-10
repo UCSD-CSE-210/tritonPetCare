@@ -2,8 +2,8 @@
 {% block body %}
   {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
 
-  <div class="logo" style="width: 300px; margin-left: 40%; margin-top: 5%">
-    <img src="../static/Maxim/img/dog_head.png" alt="" />
+  <div class="logo" style="width: 300px; margin-left: 40%; margin-top: 3%">
+    <img src="../static/Maxim/img/loginHead.png" alt="" />
   </div>
   
   <form action="{{ url_for('PetCare.login') }}" method=post>
@@ -16,5 +16,5 @@
     </dl>
   </form>
   
-  <a class="btn btn-large btn-theme" style="width: 150px; height: 27px; margin-left: 43.5%; margin-bottom: 4%" href="{{ url_for('PetCare.register') }}">Register</a>
+  <a class="btn btn-large btn-theme" style="width: 150px; height: 27px; margin-left: 43.5%; margin-bottom: 9%" href="{{ url_for('PetCare.register') }}">Register</a>
 {% endblock %}

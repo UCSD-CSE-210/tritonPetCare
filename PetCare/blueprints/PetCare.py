@@ -5,6 +5,7 @@ from Daos.AccountDao import AccountDao
 from Daos.PostDao import PostDao
 from ImageHandler import ImageHandler
 from Entities import Entities
+from EmailHandler import EmailHandler
 
 bp = Blueprint('PetCare', __name__)
 
@@ -30,7 +31,7 @@ def register():
 	isNewAccount = accountDao.add_account(accountInfo)
 	if not isNewAccount:
 		return render_template('register.html', error="User Account Existed Already")
-	# TODO: send email with authentication url ending with code
+	EmailHandler.send_authentication(accountInfo['email'], accountInfo['id'], accountInfo['code'])
 	return redirect(url_for('PetCare.login'))
 
 @bp.route('/authenticate', methods=['GET'])

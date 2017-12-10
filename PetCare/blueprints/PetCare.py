@@ -152,10 +152,13 @@ def delete_post():
 @bp.route('/interest_post', methods=['POST'])
 def interest_post():
 	if session.get('logged_in') is not None:
+		accountDao = AccountDao()
 		postDao = PostDao()
-		firstTimeInteresting = postDao.add_interest(request.form['postId'], session['logged_in'])
-		# if firstTimeInteresting:
-		# 	sendEmail()
+		postOwnerId = postDao.add_interest(request.form['postId'], session['logged_in'])
+		if postOwnerId:
+			postOwnerEmail = accountDao.get_account_email(postOwnerId)
+			userEmail = accountDao.get_account_email(session['logged_in'])
+			EmailHandler.send_interest(postOwnerId, postOwnerEmail, session['logged_in'], userEmail)
 	return redirect(url_for('PetCare.list_posts'))
 
 @bp.route('/prompt_login', methods=['GET', 'POST'])

@@ -5,15 +5,26 @@ class EmailHandler(object):
 	def send_authentication(email, userId, code):
 		recipient = email + "@ucsd.edu"
 		url = "http://127.0.0.1:5000/authenticate?userId=" + userId + "&code=" + code
-		EmailHandler.send_email(recipient, "Authentication for TritonPetCare", url)
+		message = "To activate your account for TritonPetCare, click here: " + url
+		EmailHandler.send_email(recipient, message)
 
 	@staticmethod
-	def send_email(recipient, subject, body):
+	def send_interest(postOwnerId, postOwnerEmail, userId, userEmail):
+		recipient = postOwnerEmail + "@ucsd.edu"
+		url = "http://127.0.0.1:5000/profile?userId=" + userId + "&login=" + postOwnerId
+		message = ("Someone just got interested in your post.\n"
+				"You can look into his/her profile at: " + url + " \n"
+				"And to contact the potential CareGiver, his/her email is: " + userEmail + "@ucsd.edu"
+		)
+		EmailHandler.send_email(recipient, message)
+
+	@staticmethod
+	def send_email(recipient, body):
 		gmail_user = "tritonpetcare@gmail.com"
 		gmail_pwd = "cse210project"
 		FROM = "tritonpetcare@gmail.com"
 		TO = recipient if type(recipient) is list else [recipient]
-		SUBJECT = subject
+		SUBJECT = "Notification from TritonPetCare"
 		TEXT = body
 
 		# Prepare actual message

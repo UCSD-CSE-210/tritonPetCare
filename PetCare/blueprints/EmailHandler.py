@@ -9,12 +9,22 @@ class EmailHandler(object):
 		EmailHandler.send_email(recipient, message)
 
 	@staticmethod
-	def send_interest(postOwnerId, postOwnerEmail, userId, userEmail):
+	def send_interest(postOwnerId, postOwnerEmail, careGiverId, careGiverEmail):
 		recipient = postOwnerEmail + "@ucsd.edu"
-		url = "http://127.0.0.1:5000/profile?userId=" + userId + "&login=" + postOwnerId
+		url = "http://127.0.0.1:5000/profile?userId=" + careGiverId + "&login=" + postOwnerId
 		message = ("Someone just got interested in your post.\n"
 				"You can look into his/her profile at: " + url + " \n"
-				"And to contact the potential CareGiver, his/her email is: " + userEmail + "@ucsd.edu"
+				"And to contact the potential CareGiver, his/her email is: " + careGiverEmail + "@ucsd.edu"
+		)
+		EmailHandler.send_email(recipient, message)
+
+	@staticmethod
+	def send_approval(careGiverEmail, postId, postOwnerEmail):
+		recipient = careGiverEmail + "@ucsd.edu"
+		url = "http://127.0.0.1:5000/view_post?postId=" + str(postId)
+		message = ("Congratulation! You are selected by the pet owner now.\n"
+				"To view the pet information, click here: " + url + " \n"
+				"And to contact the pet owner, his/her email is: " + postOwnerEmail + "@ucsd.edu"
 		)
 		EmailHandler.send_email(recipient, message)
 

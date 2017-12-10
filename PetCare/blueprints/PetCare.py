@@ -74,9 +74,10 @@ def profile():
 	postDao = PostDao()
 	accountInfo = accountDao.get_account_info(request.args['userId'])
 	posts = postDao.get_user_posts(request.args['userId'])
+	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
 	myCurrentPostId = accountDao.get_account_post(session['logged_in'])
 	isInterested = False if myCurrentPostId is None else postDao.check_interested(myCurrentPostId, request.args['userId'])
-	return render_template('profile.html', account=accountInfo, posts=posts, isInterested=isInterested)
+	return render_template('profile.html', account=accountInfo, posts=postInfos, isInterested=isInterested)
 
 @bp.route('/list_posts', methods=['GET'])
 def list_posts():
@@ -173,4 +174,12 @@ def prompt_login():
 
 @bp.route('/match', methods=['POST'])
 def match():
-	return 0
+	accountDao = AccountDao()
+	postId = accountDao.get_account_post(session['logged_in'])
+	if postId is not None:
+		postDao = PostDao()
+		if postDao.add_match(postId, request.form['userId']):
+			careGiverEmail = accountDao.get_account_email(request.form['userId'])
+			userEmail = accountDao.get_account_email(session['logged_in'])
+			EmailHandler.send_approval(careGiverEmail, postId, userEmail)
+	return redirect(url_for('PetCare.view_post', postId=postId))

@@ -62,9 +62,20 @@ class PostDao(Dao):
 		row = respond.fetchone()
 		interestedUsers = [] if row['interested'] is None else str(row['interested']).split(',')
 		if userId in interestedUsers:
-			return False;
+			return False
 		interestedUsers.append(userId)
 		db.execute("UPDATE posts SET interested=:interested WHERE id=:id", {'id': postId, 'interested': ','.join(interestedUsers)})
 		db.commit()
 		return row['owner_id']
+
+	def add_match(self, postId, userId):
+		db = self.get_db()
+		respond = db.execute("SELECT interested FROM posts WHERE id=:id", {'id': postId})
+		row = respond.fetchone()
+		interestedUsers = [] if row['interested'] is None else str(row['interested']).split(',')
+		if userId not in interestedUsers:
+			return False
+		db.execute("UPDATE posts SET interested=NULL, match=:match WHERE id=:id", {'id': postId, 'match': userId})
+		db.commit()
+		return True
 	

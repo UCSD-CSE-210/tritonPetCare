@@ -7,7 +7,6 @@
                     {{ post.species + '\t' + post.start_date|string + '\t' + post.end_date|string }}
                     <a href="{{ url_for('PetCare.view_post') + '?postId=' + post.id|string }}">link</a>
                     {% else %}
-                <li><em>Unbelievable.  No posts here so far</em>
             {% endfor %}
         </ul>
     {% endif %}

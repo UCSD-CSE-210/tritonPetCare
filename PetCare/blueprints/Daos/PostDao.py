@@ -10,6 +10,13 @@ class PostDao(Dao):
 		respond = db.execute("SELECT * FROM posts WHERE owner_id=:owner_id", {'owner_id': userId})
 		return respond.fetchall()
 
+	def check_interested(self, postId, userId):
+		db = self.get_db()
+		respond = db.execute("SELECT interested FROM posts WHERE id=:id", {'id': postId})
+		interestedUsers = respond.fetchone()['interested']
+		interestedUsers = [] if interestedUsers is None else str(interestedUsers).split(',')
+		return userId in interestedUsers
+
 	def list_all_posts(self, reputation):
 		db = self.get_db()
 		respond = db.execute("SELECT id, name, species, start_date, end_date, image1 FROM posts WHERE criteria<=:reputation", {'reputation': reputation})
@@ -49,14 +56,14 @@ class PostDao(Dao):
 		db.commit()
 		return prevImages
 
-	def add_interest(self, postId, user):
+	def add_interest(self, postId, userId):
 		db = self.get_db()
 		respond = db.execute("SELECT interested FROM posts WHERE id=:id", {'id': postId})
 		interestedUsers = respond.fetchone()['interested']
 		interestedUsers = [] if interestedUsers is None else str(interestedUsers).split(',')
-		if user in interestedUsers:
+		if userId in interestedUsers:
 			return False;
-		interestedUsers.append(user)
+		interestedUsers.append(userId)
 		db.execute("UPDATE posts SET interested=:interested WHERE id=:id", {'id': postId, 'interested': ','.join(interestedUsers)})
 		db.commit()
 		return True

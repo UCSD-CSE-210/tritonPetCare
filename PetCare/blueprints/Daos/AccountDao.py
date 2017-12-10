@@ -33,7 +33,7 @@ class AccountDao(Dao):
 		db.commit()
 		return True
 
-	def check_account_password(self, email, password):
+	def check_account_email_password(self, email, password):
 		db = self.get_db()
 		respond = db.execute("SELECT id, password FROM accounts WHERE email=:email", {'email': email})
 		row = respond.fetchone()
@@ -72,6 +72,14 @@ class AccountDao(Dao):
 		db.execute("UPDATE accounts SET current_post=NULL WHERE id=:id", {'id': userId})
 		db.commit()
 		return True
+
+	def check_account_id_password(self, userId, password):
+		db = self.get_db()
+		respond = db.execute("SELECT password FROM accounts WHERE id=:id", {'id': userId})
+		row = respond.fetchone()
+		if row is None:
+			return None
+		return row['password'] == password
 
 	def update_account_reputation(self, id, score):
 		db = self.get_db()

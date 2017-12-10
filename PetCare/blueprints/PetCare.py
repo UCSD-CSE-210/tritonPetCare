@@ -47,7 +47,7 @@ def login():
 	if request.method == 'GET':
 		return render_template('login.html', error=None)
 	accountDao = AccountDao()
-	userId = accountDao.check_account_password(request.form['email'], request.form['password'])
+	userId = accountDao.check_account_email_password(request.form['email'], request.form['password'])
 	if userId is None:
 		return render_template('login.html', error="Invalid User Account")
 	if not userId:
@@ -62,15 +62,20 @@ def logout():
 
 @bp.route('/profile', methods=['GET'])
 def profile():
+	if 'login' in request.args and session.get('logged_in') is not None and session.get('logged_in') != request.args['login']:
+		session.pop('logged_in', None)
 	if session.get('logged_in') is None:
-		return redirect(url_for('PetCare.login'))
+		if 'login' not in request.args:
+			return redirect(url_for('PetCare.login')) 
+		else:
+			return redirect(url_for('PetCare.prompt_login', userId=request.args['login'], targetId=request.args['userId']))
 	accountDao = AccountDao()
 	postDao = PostDao()
-	accountInfo = accountDao.get_account_info(session['logged_in'])
-	print session['logged_in']
-	posts = postDao.get_user_posts(session['logged_in'])
-	print posts
-	return render_template('profile.html', info=info, posts=posts)
+	accountInfo = accountDao.get_account_info(request.args['userId'])
+	posts = postDao.get_user_posts(request.args['userId'])
+	myCurrentPostId = accountDao.get_account_post(session['logged_in'])
+	isInterested = False if myCurrentPostId is None else postDao.check_interested(myCurrentPostId, request.args['userId'])
+	return render_template('profile.html', account=accountInfo, posts=posts, isInterested=isInterested)
 
 @bp.route('/list_posts', methods=['GET'])
 def list_posts():
@@ -151,3 +156,17 @@ def interest_post():
 		# if firstTimeInteresting:
 		# 	sendEmail()
 	return redirect(url_for('PetCare.list_posts'))
+
+@bp.route('/prompt_login', methods=['GET', 'POST'])
+def prompt_login():
+	if request.method == 'GET':
+		return render_template('prompt_login.html', userId=request.args['userId'], targetId=request.args['targetId'], error=None)
+	accountDao = AccountDao()
+	if not accountDao.check_account_id_password(request.form['userId'], request.form['password']):
+		return render_template('prompt_login.html', userId=request.form['userId'], targetId=request.form['password'], error="Wrong Password")
+	session['logged_in'] = request.form['userId']
+	return redirect(url_for('PetCare.profile', userId=request.form['targetId']))
+
+@bp.route('/match', methods=['POST'])
+def match():
+	return 0

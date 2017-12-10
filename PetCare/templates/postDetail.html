@@ -1,0 +1,114 @@
+{% extends "layout.html" %}
+{% block body %}
+	<!-- spacer section -->
+	<section class="spacer green">
+		<div class="container">
+			<div class="row">
+				<div class="span12 aligncenter flyUp">
+					<h2 class="pagetitle">{{post.name}}
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- end spacer section -->
+	<!-- section: team -->
+	<section id="maincontent" class="inner">
+		<div class="container">
+			<div class="row">
+
+				<div class="span6">
+					<h4>Main Information</h4>
+					<!-- start: Accordion -->
+					<div class="accordion" id="accordion2">
+						<div class="accordion-group">
+							<div class="accordion-heading">
+								<a class="accordion-toggle active" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+								<i class="icon-minus"></i> Personal Information </a>
+							</div>
+							<div id="collapseOne" class="accordion-body collapse in">
+								<div class="accordion-inner">
+									<p>
+										Name: {{post.name}}
+									</p>
+									<p>
+										Gender: {{post.gender}}
+									</p>
+									<p>
+										Breed and Species: {{post.species}}
+									</p>
+									<p>
+										Age: {{post.age}}
+									</p>
+								</div>
+							</div>
+						</div>
+						<div class="accordion-group">
+							<div class="accordion-heading">
+								<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+								<i class="icon-plus"></i> Vaccination </a>
+							</div>
+							<div id="collapseTwo" class="accordion-body collapse">
+								<div class="accordion-inner">
+									{{post.vaccination}}
+								</div>
+							</div>
+						</div>
+						<div class="accordion-group">
+							<div class="accordion-heading">
+								<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
+								<i class="icon-plus"></i> Post Information </a>
+							</div>
+							<div id="collapseThree" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<p>
+										Start Date: {{post.start_date}}
+									</p>
+									<p>
+										End Date: {{post.end_date}}
+									</p>
+									<p>
+										Post Date: {{post.post_date}}
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--end: Accordion -->
+				</div>
+
+
+				<div class="span6">
+					<h4>Pictures</h4>
+					<div class="tabbable">
+						<ul class="nav nav-tabs">
+							<li class="active"><a href="#one" data-toggle="tab">1</a></li>
+							<li><a href="#two" data-toggle="tab">2</a></li>
+							<li><a href="#three" data-toggle="tab">3</a></li>
+						</ul>
+						<div class="tab-content">
+							<div class="tab-pane active" id="one">
+								<img src="{{ post.image1 }}" alt="Mountain View">
+							</div>
+							<div class="tab-pane" id="two">
+								<img src="{{ post.image2 }}" alt="Mountain View">
+							</div>
+							<div class="tab-pane" id="three">
+								<img src="{{ post.image3 }}" alt="Mountain View">
+							</div>
+						</div>
+					</div>
+				</div>
+
+				
+			</div>
+
+			<div class="row">
+				<div class="span12">
+					<h4 class="heading">Show your Interest<span></span></h4>
+					<a href="#" class="btn btn-primary btn-large btn-rounded">I am interested!</a>
+				</div>
+			</div>
+		</div>
+		<!-- end container -->
+	</section>
+{% endblock %}

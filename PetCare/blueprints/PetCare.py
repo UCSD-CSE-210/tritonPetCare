@@ -135,7 +135,7 @@ def view_post():
 	postDao = PostDao()
 	post = postDao.get_post(request.args['postId'])
 	postInfo = Entities.make_post_output(dict(post))
-	return render_template('view_post.html', post=postInfo)
+	return render_template('postDetail.html', post=postInfo)
 
 @bp.route('/delete_post', methods=['POST'])
 def delete_post():

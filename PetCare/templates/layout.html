@@ -33,7 +33,6 @@
           <!-- navigation -->
           <nav class="pull-right nav-collapse collapse">
             <ul id="menu-main" class="nav">
-              <li><a title="services" href="#services">Services</a></li>
               <li><a href="{{ url_for('PetCare.list_posts') }}">Posts</a></li>
              {% if session.logged_in %}
               <li><a href="{{ url_for('PetCare.profile', userId=session.logged_in) }}">Profile</a></li>

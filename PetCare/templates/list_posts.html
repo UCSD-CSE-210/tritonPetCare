@@ -59,7 +59,9 @@
                     p.innerHTML = post.notes
 
                     var readMoreLink = document.createElement('a')
+                    readMoreLink.className = 'more'
                     readMoreLink.href = '{{ url_for('PetCare.view_post')}}'.concat('?postId=').concat(post.id)
+                    readMoreLink.innerHTML = 'Read More'
 
                     rowDiv.appendChild(span3Div)
                     span3Div.appendChild(homePostDiv)                                      
@@ -74,6 +76,7 @@
                     postMetaDiv.appendChild(dateSpan2)
                     entryContentDiv.appendChild(h5)
                     entryContentDiv.appendChild(p)
+                    entryContentDiv.appendChild(readMoreLink)
 
                     h5.appendChild(strong)
                     strong.appendChild(jinhaoA)

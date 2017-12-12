@@ -19,7 +19,7 @@ class PostDao(Dao):
 
 	def list_all_posts(self, reputation):
 		db = self.get_db()
-		respond = db.execute("SELECT id, name, species, start_date, end_date, image1 FROM posts WHERE criteria<=:reputation", {'reputation': reputation})
+		respond = db.execute("SELECT id, name, species, start_date, end_date, image1, notes FROM posts WHERE criteria<=:reputation", {'reputation': reputation})
 		return respond.fetchall()
 
 	def add_post(self, postInfo):

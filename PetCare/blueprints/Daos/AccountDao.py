@@ -87,10 +87,14 @@ class AccountDao(Dao):
 			return None
 		return row['password'] == password
 
-	def update_account_reputation(self, id, score):
+	def update_account_reputation(self, userId, review, lastReview):
 		db = self.get_db()
-		respond = db.execute("SELECT reputation_sum, reputation_num FROM accounts WHERE id=:id", {'id': id})
+		respond = db.execute("SELECT reputation_sum, reputation_num FROM accounts WHERE id=:id", {'id': userId})
 		row = respond.fetchone()
-		db.execute("UPDATE accounts SET reputation_sum=:reputation_sum, reputation_num=:reputation_num WHERE id=:id",
-					{'id': id, 'reputation_sum': row['reputation_sum'] + score, 'reputation_num': reputation_num + 1})
+		if lastReview is None:
+			db.execute("UPDATE accounts SET reputation_sum=:reputation_sum, reputation_num=:reputation_num WHERE id=:id",
+					{'id': userId, 'reputation_sum': row['reputation_sum'] + review, 'reputation_num': row['reputation_num'] + 1})
+		else:
+			db.execute("UPDATE accounts SET reputation_sum=:reputation_sum WHERE id=:id",
+					{'id': userId, 'reputation_sum': row['reputation_sum'] - lastReview + review})
 		db.commit()

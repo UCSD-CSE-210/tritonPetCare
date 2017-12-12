@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Blueprint, request, session, redirect, url_for, render_template, abort, jsonify
+import time
 from Daos.Dao import Dao
 from Daos.AccountDao import AccountDao
 from Daos.PostDao import PostDao
@@ -76,19 +77,8 @@ def profile():
 	posts = postDao.get_user_posts(request.args['userId'])
 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
 	myCurrentPostId = accountDao.get_account_post(session['logged_in'])
-	isInterested = False if myCurrentPostId is None else postDao.check_interested(myCurrentPostId, request.args['userId'])
-	return render_template('profile.html', account=accountInfo, posts=postInfos, isInterested=isInterested)
-
-# @bp.route('/list_posts', methods=['GET'])
-# def list_posts():
-# 	if session.get('logged_in') is None:
-# 		return redirect(url_for('PetCare.login'))
-# 	accountDao = AccountDao()
-# 	reputation = accountDao.get_account_reputation(session['logged_in'])
-# 	postDao = PostDao()
-# 	posts = postDao.list_all_posts(reputation)
-# 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
-# 	return render_template('list_posts.html', posts=postInfos)
+	status = 'UNRELATED' if myCurrentPostId is None else postDao.check_relation(myCurrentPostId, request.args['userId'])
+	return render_template('profile.html', account=accountInfo, posts=postInfos, status=status)
 
 @bp.route('/list_posts', methods=['GET'])
 def list_posts():
@@ -154,32 +144,39 @@ def view_post():
 		return redirect(url_for('PetCare.login'))
 	postDao = PostDao()
 	post = postDao.get_post(request.args['postId'])
+	status = 'PENDING'
+	if post['match'] is not None and len(post['match']) > 0:
+		status = 'MATCHED'
+	if time.time() > post['end_date']:
+		status = 'FINISHED'
 	postInfo = Entities.make_post_output(dict(post))
-	return render_template('view_post.html', post=postInfo)
+	return render_template('view_post.html', post=postInfo, status=status)
 
 @bp.route('/delete_post', methods=['POST'])
 def delete_post():
-	if session.get('logged_in') is not None:
-		accountDao = AccountDao()
-		ownerMatched = accountDao.remove_account_post(session['logged_in'], request.form['postId'])
-		if not ownerMatched:
-			return redirect(url_for('PetCare.list_posts'))
-		postDao = PostDao()
-		prevImages = postDao.remove_post(request.form['postId'])
-		for img in prevImages:
-			ImageHandler.delete_image(img)
+	if session.get('logged_in') is None:
+		return redirect(url_for('PetCare.login'))
+	accountDao = AccountDao()
+	ownerMatched = accountDao.remove_account_post(session['logged_in'], request.form['postId'])
+	if not ownerMatched:
+		return redirect(url_for('PetCare.list_posts'))
+	postDao = PostDao()
+	prevImages = postDao.remove_post(request.form['postId'])
+	for img in prevImages:
+		ImageHandler.delete_image(img)
 	return redirect(url_for('PetCare.list_posts'))
 
 @bp.route('/interest_post', methods=['POST'])
 def interest_post():
-	if session.get('logged_in') is not None:
-		accountDao = AccountDao()
-		postDao = PostDao()
-		postOwnerId = postDao.add_interest(request.form['postId'], session['logged_in'])
-		if postOwnerId:
-			postOwnerEmail = accountDao.get_account_email(postOwnerId)
-			userEmail = accountDao.get_account_email(session['logged_in'])
-			EmailHandler.send_interest(postOwnerId, postOwnerEmail, session['logged_in'], userEmail)
+	if session.get('logged_in') is None:
+		return redirect(url_for('PetCare.login'))
+	accountDao = AccountDao()
+	postDao = PostDao()
+	postOwnerId = postDao.add_interest(request.form['postId'], session['logged_in'])
+	if postOwnerId:
+		postOwnerEmail = accountDao.get_account_email(postOwnerId)
+		userEmail = accountDao.get_account_email(session['logged_in'])
+		EmailHandler.send_interest(postOwnerId, postOwnerEmail, session['logged_in'], userEmail)
 	return redirect(url_for('PetCare.list_posts'))
 
 @bp.route('/prompt_login', methods=['GET', 'POST'])
@@ -194,6 +191,8 @@ def prompt_login():
 
 @bp.route('/match', methods=['POST'])
 def match():
+	if session.get('logged_in') is None:
+		return redirect(url_for('PetCare.login'))
 	accountDao = AccountDao()
 	postId = accountDao.get_account_post(session['logged_in'])
 	if postId is not None:
@@ -202,4 +201,21 @@ def match():
 			careGiverEmail = accountDao.get_account_email(request.form['userId'])
 			userEmail = accountDao.get_account_email(session['logged_in'])
 			EmailHandler.send_approval(careGiverEmail, postId, userEmail)
-	return redirect(url_for('PetCare.view_post', postId=postId))
+	return redirect(url_for('PetCare.profile', userId=request.form['userId']))
+
+@bp.route('/review', methods=['POST'])
+def review():
+	if session.get('logged_in') is None:
+		return redirect(url_for('PetCare.login'))
+	accountDao = AccountDao()
+	postId = accountDao.get_account_post(session['logged_in'])
+	if postId is not None:
+		postDao = PostDao()
+		post = postDao.get_post(postId)
+		if post['match'] is not None:
+			postDao.update_review(post['id'], int(request.form['review']))
+			accountDao.update_account_reputation(post['match'], int(request.form['review']), post['review'])
+			if time.time() > post['end_date']:
+				accountDao.remove_account_post(session['logged_in'], post['id'])
+			return redirect(url_for('PetCare.profile', userId=post['match']))
+	return redirect(url_for('PetCare.list_posts'))

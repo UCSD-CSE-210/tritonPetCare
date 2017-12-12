@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from blueprints.PetCare import init_db, close_db, bp
+from blueprints.PetCare import *
 
 app = Flask(__name__)
 app.config.from_object(__name__)

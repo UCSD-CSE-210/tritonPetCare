@@ -1,5 +1,6 @@
 graft PetCare/blueprints
 graft PetCare/static
 graft PetCare/templates
+graft PetCare/tests
 include PetCare/accounts.sql
 include PetCare/posts.sql

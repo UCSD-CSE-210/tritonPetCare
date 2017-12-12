@@ -4,11 +4,26 @@
     <ul class=post>
     <li><h2>{{ account.name }}</h2>
     	{{ account.id + '\t' }}
-    {% if isInterested %}
+    {% if status == 'INTERESTED' %}
       <form action="{{ url_for('PetCare.match') }}" method=post>
       <dl>
         <dt><input type=hidden name=userId value={{ request.args['userId'] }}>
         <dt><input type=submit value=Approve>
+      </dl>
+    {% endif %}
+    {% if status == 'MATCHED' %}
+      <form action="{{ url_for('PetCare.review') }}" method=post>
+      <dl>
+        <dd>
+        <select name=review>
+          <option value=0>0</option>
+          <option value=1>1</option>
+          <option value=2>2</option>
+          <option value=3>3</option>
+          <option value=4>4</option>
+          <option value=5>5</option>
+        </select>
+        <dt><input type=submit value="Submit Review">
       </dl>
     {% endif %}
     </ul>

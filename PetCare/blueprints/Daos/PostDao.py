@@ -10,16 +10,21 @@ class PostDao(Dao):
 		respond = db.execute("SELECT * FROM posts WHERE owner_id=:owner_id", {'owner_id': userId})
 		return respond.fetchall()
 
-	def check_interested(self, postId, userId):
+	def check_relation(self, postId, userId):
 		db = self.get_db()
-		respond = db.execute("SELECT interested FROM posts WHERE id=:id", {'id': postId})
-		interestedUsers = respond.fetchone()['interested']
-		interestedUsers = [] if interestedUsers is None else str(interestedUsers).split(',')
-		return userId in interestedUsers
+		respond = db.execute("SELECT interested, match FROM posts WHERE id=:id", {'id': postId})
+		row = respond.fetchone()
+		if userId == row['match']:
+			return 'MATCHED'
+		interestedUsers = [] if row['interested'] is None else str(row['interested']).split(',')
+		if userId in interestedUsers:
+			return 'INTERESTED'
+		return 'UNRELATED'
 
 	def list_all_posts(self, reputation):
 		db = self.get_db()
-		respond = db.execute("SELECT id, name, species, start_date, end_date, image1 FROM posts WHERE criteria<=:reputation", {'reputation': reputation})
+		respond = db.execute("SELECT id, name, species, start_date, end_date, image1 FROM posts WHERE criteria<=:reputation AND match IS NULL",
+				{'reputation': reputation})
 		return respond.fetchall()
 
 	def add_post(self, postInfo):
@@ -58,8 +63,10 @@ class PostDao(Dao):
 
 	def add_interest(self, postId, userId):
 		db = self.get_db()
-		respond = db.execute("SELECT interested, owner_id FROM posts WHERE id=:id", {'id': postId})
+		respond = db.execute("SELECT interested, match, owner_id FROM posts WHERE id=:id", {'id': postId})
 		row = respond.fetchone()
+		if row['match'] is not None and len(row['match']) > 0:
+			return False
 		interestedUsers = [] if row['interested'] is None else str(row['interested']).split(',')
 		if userId in interestedUsers:
 			return False
@@ -78,4 +85,9 @@ class PostDao(Dao):
 		db.execute("UPDATE posts SET interested=NULL, match=:match WHERE id=:id", {'id': postId, 'match': userId})
 		db.commit()
 		return True
+
+	def update_review(self, postId, review):
+		db = self.get_db()
+		db.execute("UPDATE posts SET review=:review WHERE id=:id", {'id': postId, 'review': review})
+		db.commit()
 	

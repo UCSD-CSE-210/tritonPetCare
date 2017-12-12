@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Blueprint, request, session, redirect, url_for, render_template, abort
+from flask import Blueprint, request, session, redirect, url_for, render_template, abort, jsonify
 from Daos.Dao import Dao
 from Daos.AccountDao import AccountDao
 from Daos.PostDao import PostDao
@@ -79,16 +79,36 @@ def profile():
 	isInterested = False if myCurrentPostId is None else postDao.check_interested(myCurrentPostId, request.args['userId'])
 	return render_template('profile.html', account=accountInfo, posts=postInfos, isInterested=isInterested)
 
+# @bp.route('/list_posts', methods=['GET'])
+# def list_posts():
+# 	if session.get('logged_in') is None:
+# 		return redirect(url_for('PetCare.login'))
+# 	accountDao = AccountDao()
+# 	reputation = accountDao.get_account_reputation(session['logged_in'])
+# 	postDao = PostDao()
+# 	posts = postDao.list_all_posts(reputation)
+# 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
+# 	return render_template('list_posts.html', posts=postInfos)
+
 @bp.route('/list_posts', methods=['GET'])
 def list_posts():
 	if session.get('logged_in') is None:
 		return redirect(url_for('PetCare.login'))
-	accountDao = AccountDao()
-	reputation = accountDao.get_account_reputation(session['logged_in'])
+	offset = 0
+	limit = 4
 	postDao = PostDao()
-	posts = postDao.list_all_posts(reputation)
+	posts = postDao.list_limited_posts(limit, offset)
 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
 	return render_template('list_posts.html', posts=postInfos)
+
+@bp.route('/_load_more_posts')
+def load_more_posts():
+	offset = request.args.get('offset')
+	limit = 4
+	postDao = PostDao()
+	posts = postDao.list_limited_posts(limit, offset)
+	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
+	return jsonify(postInfos)
 
 @bp.route('/create_post', methods=['GET', 'POST'])
 def create_post():

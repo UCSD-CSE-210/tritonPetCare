@@ -1,7 +1,98 @@
 {% extends "layout.html" %}
 {% block body %}
+    <head>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type=text/javascript>
+            $(function() {
+              $('a#load_more_button').bind('click', function() {
+                $.getJSON('/_load_more_posts', {
+                  offset: $('div.span3').length,
+                }, function(data) {
+                  console.log(data)
+
+                  if (data.length < 4) {
+                    var readMoreButton = document.getElementById('read-more');
+                    readMoreButton.style.display = 'none'; 
+                  }
+
+                  var containerDiv = document.getElementById('allPosts')
+
+                  var rowDiv;
+                  rowDiv = document.createElement('div')
+                  rowDiv.className = 'row'       
+     
+                  for (i = 0; i < data.length; i++) {
+                    post = data[i]
+
+                    var span3Div = document.createElement('div')
+                    span3Div.className = 'span3'
+                    
+                    var homePostDiv = document.createElement('div')
+                    homePostDiv.className = 'home-post' 
+                    
+                    var postImageDiv = document.createElement('div')
+                    postImageDiv.className = 'post-image'
+                    var postMetaDiv = document.createElement('div')
+                    postMetaDiv.className = 'post-meta'
+                    var entryContentDiv = document.createElement('div')
+                    entryContentDiv.className = 'entry-content'
+
+                    var maxImgImg = document.createElement('img')
+                    maxImgImg.className = 'max-img'
+                    maxImgImg.src = post.image1
+
+                    var iconCalendarI = document.createElement('i')
+                    iconCalendarI.className = 'icon-calendar icon-2x'
+                    var dateSpan1 = document.createElement('span')
+                    dateSpan1.className = 'date'
+                    dateSpan1.innerHTML = post.start_date
+                    var dateSpan2 = document.createElement('span')
+                    dateSpan2.className = 'date'
+                    dateSpan2.innerHTML = post.end_date
+                    
+                    var h5 = document.createElement('h5')
+                    var strong = document.createElement('strong')
+                    var jinhaoA = document.createElement('a')
+                    jinhaoA.href = '#'
+                    jinhaoA.innerHTML = post.name
+                    var p = document.createElement('p')
+                    p.innerHTML = post.notes
+
+                    var readMoreLink = document.createElement('a')
+                    readMoreLink.href = '{{ url_for('PetCare.view_post')}}'.concat('?postId=').concat(post.id)
+
+                    rowDiv.appendChild(span3Div)
+                    span3Div.appendChild(homePostDiv)                                      
+                    
+                    homePostDiv.appendChild(postImageDiv)
+                    homePostDiv.appendChild(postMetaDiv)
+                    homePostDiv.appendChild(entryContentDiv)          
+
+                    postImageDiv.appendChild(maxImgImg)
+                    postMetaDiv.appendChild(iconCalendarI)
+                    postMetaDiv.appendChild(dateSpan1)
+                    postMetaDiv.appendChild(dateSpan2)
+                    entryContentDiv.appendChild(h5)
+                    entryContentDiv.appendChild(p)
+
+                    h5.appendChild(strong)
+                    strong.appendChild(jinhaoA)
+
+                    if (i % 4 == 3 || i == data.length - 1) {
+                        containerDiv.appendChild(rowDiv)                                                
+                        rowDiv = document.createElement('div')
+                        rowDiv.className = 'row'       
+                    }
+                  }
+                });
+                return false;
+              });
+            });
+        </script>
+    </head>
+
     <section id="blog" class="section">
-		<div class="container">
+		<div class="container" id="allPosts">
         {% for post_row in posts | batch(4, '&nbsp;') %}
             <div class="row">
             {% set outer_loop = loop %}
@@ -26,14 +117,17 @@
                         </div>
                     </div>
                 </div>
-            {% endif%}
+            {% endif %}
             {% endfor %}
             </div>
         {% endfor %}
-			<div class="blankdivider30"></div>
-			<div class="aligncenter">
-				<a href="#" class="btn btn-large btn-theme">More blog post</a>
-			</div>
 		</div>
+
+        <div class="blankdivider30"></div>
+        {% if posts|length > 0 %}
+        <div class="aligncenter" id="read-more">
+            <a href="#" id=load_more_button class="btn btn-large btn-theme">More blog post</a>
+        </div>
+        {% endif %}
 	</section>
 {% endblock %}

@@ -34,6 +34,9 @@ class Entities(object):
 
 	@staticmethod
 	def make_post_output(postInfo):
+		postInfo['start_date_year_first'] = time.strftime('%Y-%m-%d', time.localtime(postInfo['start_date']))
+		postInfo['end_date_year_first'] = time.strftime('%Y-%m-%d', time.localtime(postInfo['end_date']))
+		
 		postInfo['start_date'] = time.strftime('%m/%d/%Y', time.localtime(postInfo['start_date']))
 		postInfo['end_date'] = time.strftime('%m/%d/%Y', time.localtime(postInfo['end_date']))
 		if 'post_date' in postInfo:

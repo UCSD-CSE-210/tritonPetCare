@@ -5,59 +5,161 @@
   <form action="{{ url_for('PetCare.edit_post') }}" enctype="multipart/form-data" method=post>
     <dl>
       <dt>Name:
-      <dd><input type=text name=name>
+      <dd><input type=text name=name value={{prevPost.name}}>
       <dt>Species:
       <dd>
         <select name=species>
+          {% if prevPost is not none and prevPost.species == 'Dog' %}
+          <option value="Dog" selected="selected">Dog</option>
+          {% else %}
           <option value="Dog">Dog</option>
+          {% endif %}
+
+          {% if prevPost.species == 'Cat' %}
+          <option value="Cat" selected="selected">Cat</option>
+          {% else %}
           <option value="Cat">Cat</option>
+          {% endif %}
+          
+          {% if prevPost.species == 'Bird' %}
+          <option value="Bird" selected="selected">Bird</option>
+          {% else %}
           <option value="Bird">Bird</option>
+          {% endif %}
         </select>
       <dt>Breed:
-      <dd><input type=text name=breed>
+      <dd><input type=text name=breed value={{prevPost.breed}}>
       <dt>Gender:
       <dd>
+        {% if prevPost.gender == 1 %}
         <input type=radio name=gender value=1 checked>Male
         <input type=radio name=gender value=0>Female
+        {% else %}
+        <input type=radio name=gender value=1>Male
+        <input type=radio name=gender value=0 checked>Female
+        {% endif %}
       <dt>Age:
       <dd>
         <select name=age>
-          <option value=0><1 year</option>
+          {% if prevPost is not none and prevPost.age < 1 %}
+          <option value=0 selected="selected"> <1 year</option>
+          {% else %}
+          <option value=0> <1 year</option>
+          {% endif %}
+          
+          {% if prevPost.age == 1 %}
+          <option value=1 selected="selected">1 year</option>
+          {% else %}
           <option value=1>1 year</option>
+          {% endif %}
+
+          {% if prevPost.age == 2 %}
+          <option value=2 selected="selected">2 year</option>
+          {% else %}
           <option value=2>2 year</option>
+          {% endif %}
+
+          {% if prevPost.age == 3 %}
+          <option value=3 selected="selected">3 year</option>
+          {% else %}
           <option value=3>3 year</option>
+          {% endif %}
+
+          {% if prevPost.age == 4 %}
+          <option value=4 selected="selected">4 year</option>
+          {% else %}
           <option value=4>4 year</option>
+          {% endif %}
+
+          {% if prevPost.age == 5 %}
+          <option value=5 selected="selected">5 year</option>
+          {% else %}
           <option value=5>5 year</option>
+          {% endif %}
+
+          {% if prevPost.age == 6 %}
+          <option value=6 selected="selected">6 year</option>
+          {% else %}
           <option value=6>6 year</option>
+          {% endif %}
+
+          {% if prevPost.age == 7 %}
+          <option value=7 selected="selected">7 year</option>
+          {% else %}
           <option value=7>7 year</option>
+          {% endif %}
+
+          {% if prevPost.age == 8 %}
+          <option value=8 selected="selected">8 year</option>
+          {% else %}
           <option value=8>8 year</option>
+          {% endif %}
+          
+          {% if prevPost.age == 9 %}
+          <option value=9 selected="selected">9 year</option>
+          {% else %}
           <option value=9>9 year</option>
-          <option value=10>>=10 year</option>
+          {% endif %}
+
+          {% if prevPost is not none and prevPost.age >= 10 %}
+          <option value=10 selected="selected"> >=10 year</option>
+          {% else %}
+          <option value=10> >= 10 year</option>
+          {% endif %}
         </select>
       <dt>Vaccination:
-      <dd><input type=text name=vaccination>
+      <dd><input type=text name=vaccination value='{{prevPost.vaccination}}'>
       <dt>Start Date:
-      <dd><input type=date name=start_date>
+      <dd><input type=date name=start_date value='{{prevPost.start_date_year_first}}'>
       <dt>End Date:
-      <dd><input type=date name=end_date>
+      <dd><input type=date name=end_date value='{{prevPost.end_date_year_first}}'>
       <dt>Criteria:
       <dd>
         <select name=criteria>
+          {% if prevPost.criteria == 0 %}
+          <option value=0 selected="selected">No criteria</option>
+          {% else %}
           <option value=0>No criteria</option>
+          {% endif%}
+
+          {% if prevPost.criteria == 1 %}
+          <option value=1 selected="selected">1 point</option>
+          {% else %}
           <option value=1>1 point</option>
+          {% endif%}
+
+          {% if prevPost.criteria == 2 %}
+          <option value=2 selected="selected">2 point</option>
+          {% else %}
           <option value=2>2 point</option>
+          {% endif%}
+
+          {% if prevPost.criteria == 3 %}
+          <option value=3 selected="selected">3 point</option>
+          {% else %}
           <option value=3>3 point</option>
+          {% endif%}
+
+          {% if prevPost.criteria == 4 %}
+          <option value=4 selected="selected">4 point</option>
+          {% else %}
           <option value=4>4 point</option>
+          {% endif%}
+
+          {% if prevPost.criteria == 5 %}
+          <option value=5 selected="selected">5 point</option>
+          {% else %}
           <option value=5>5 point</option>
+          {% endif%}
         </select>
       <dt>Notes:
-      <dd><input type=text name=notes>
+      <dd><input type=text name=notes value='{{prevPost.notes}}'>
       <dt>Image1:
-      <dd><input type=file name=image1>
+      <dd><input type=file name=image1 value={{prevPost.image1}}>
       <dt>Image2:
-      <dd><input type=file name=image2>
+      <dd><input type=file name=image2 value={{prevPost.image2}}>
       <dt>Image3:
-      <dd><input type=file name=image3>
+      <dd><input type=file name=image3 value={{prevPost.image3}}>
       <dt><input type=submit value=Submit>
     </dl>
   </form>

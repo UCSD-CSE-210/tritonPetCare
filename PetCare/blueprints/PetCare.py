@@ -127,14 +127,20 @@ def edit_post():
 	accountDao = AccountDao()
 	postDao = PostDao()	
 	postId = accountDao.get_account_post(session['logged_in'])
+	
 	if postId is None:
 		return redirect(url_for('PetCare.create_post'))
-	prevPost = dict(postDao.get_post(postId))
+	
+	prevPost = postDao.get_post(postId)
+	prevPostInfo = Entities.make_post_output(dict(prevPost))
 	if request.method == 'GET':
-		return render_template('edit_post.html', error=None, prevPost=prevPost)
-	postInfo = Entities.make_post_info(session['logged_in'], request, prevPost)
+		return render_template('edit_post.html', error=None, prevPost=prevPostInfo)
+
+	prevPostDict = dict(prevPost)
+	postInfo = Entities.make_post_info(session['logged_in'], request, prevPostDict)
 	if not postInfo:
-		return render_template('edit_post.html', error="Required Informaion Missing")
+		return render_template('edit_post.html', error="Required Informaion Missing", prevPost=None)
+	
 	postInfo['id'] = postId
 	postDao.update_post(postInfo)
 	return redirect(url_for('PetCare.list_posts'))

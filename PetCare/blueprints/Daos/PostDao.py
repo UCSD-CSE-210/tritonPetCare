@@ -26,9 +26,9 @@ class PostDao(Dao):
 		respond = db.execute("SELECT id, name, species, start_date, end_date, image1, notes FROM posts WHERE criteria<=:reputation", {'reputation': reputation})
 		return respond.fetchall()
 
-	def list_limited_posts(self, limit, offset):
+	def list_limited_posts(self, reputation, limit, offset):
 		db = self.get_db()
-		respond = db.execute("SELECT id, name, species, start_date, end_date, image1, notes FROM posts LIMIT :limit OFFSET :offset;", {'limit': limit, 'offset': offset})
+		respond = db.execute("SELECT id, name, species, start_date, end_date, image1, notes FROM posts WHERE criteria<=:reputation LIMIT :limit OFFSET :offset;", {'reputation': reputation, 'limit': limit, 'offset': offset})
 		return respond.fetchall()
 
 	def add_post(self, postInfo):

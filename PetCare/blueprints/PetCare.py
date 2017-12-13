@@ -84,19 +84,25 @@ def profile():
 def list_posts():
 	if session.get('logged_in') is None:
 		return redirect(url_for('PetCare.login'))
+	accountDao = AccountDao()
+	reputation = accountDao.get_account_reputation(session['logged_in'])		
 	offset = 0
 	limit = 4
 	postDao = PostDao()
-	posts = postDao.list_limited_posts(limit, offset)
+	posts = postDao.list_limited_posts(reputation, limit, offset)
 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
 	return render_template('list_posts.html', posts=postInfos)
 
 @bp.route('/_load_more_posts')
 def load_more_posts():
+	if session.get('logged_in') is None:
+		return redirect(url_for('PetCare.login'))
+	accountDao = AccountDao()
+	reputation = accountDao.get_account_reputation(session['logged_in'])		
 	offset = request.args.get('offset')
 	limit = 4
 	postDao = PostDao()
-	posts = postDao.list_limited_posts(limit, offset)
+	posts = postDao.list_limited_posts(reputation, limit, offset)
 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
 	return jsonify(postInfos)
 

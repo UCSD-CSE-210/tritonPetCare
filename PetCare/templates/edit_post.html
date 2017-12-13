@@ -1,5 +1,48 @@
 {% extends "layout.html" %}
 {% block body %}
+    <head>
+        <script type=text/javascript>
+        function readURL1(input) {
+          if (input.files && input.files[0]) {
+              var reader = new FileReader();
+
+              reader.onload = function (e) {
+                  $('#img1')
+                      .attr('src', e.target.result)
+              };
+
+              reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function readURL2(input) {
+          if (input.files && input.files[0]) {
+              var reader = new FileReader();
+
+              reader.onload = function (e) {
+                  $('#img2')
+                      .attr('src', e.target.result)
+              };
+
+              reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function readURL3(input) {
+          if (input.files && input.files[0]) {
+              var reader = new FileReader();
+
+              reader.onload = function (e) {
+                  $('#img3')
+                      .attr('src', e.target.result)
+              };
+
+              reader.readAsDataURL(input.files[0]);
+            }
+        }        
+        </script>
+    </head>
+
   <h2>Post</h2>
   {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
   <form action="{{ url_for('PetCare.edit_post') }}" enctype="multipart/form-data" method=post>
@@ -154,12 +197,31 @@
         </select>
       <dt>Notes:
       <dd><input type=text name=notes value='{{prevPost.notes}}'>
+      
       <dt>Image1:
-      <dd><input type=file name=image1 value={{prevPost.image1}}>
+      {% if prevPost.image1|length > 0 %}
+      <dd><img id="img1" src="{{ prevPost.image1 }}" alt="first image" style="width: 150px; height: 200px"> 
+      {% else %}
+      <dd><img id="img1" src="#" alt="first image" style="width: 150px; height: 200px"> 
+      {% endif %}      
+      <dd><input type=file name=image1 onchange="readURL1(this);">
+      
       <dt>Image2:
-      <dd><input type=file name=image2 value={{prevPost.image2}}>
+      {% if prevPost.image2|length > 0 %}
+      <dd><img id="img2" src="{{ prevPost.image2 }}" alt="second image" style="width: 150px; height: 200px"> 
+      {% else %}
+      <dd><img id="img2" src="#" alt="second image" style="width: 150px; height: 200px"> 
+      {% endif %}      
+      <dd><input type=file name=image2 onchange="readURL2(this);">
+
       <dt>Image3:
-      <dd><input type=file name=image3 value={{prevPost.image3}}>
+      {% if prevPost.image3|length > 0 %}
+      <dd><img id="img3" src="{{ prevPost.image3 }}" alt="third image" style="width: 150px; height: 200px"> 
+      {% else %}
+      <dd><img id="img3" src="#" alt="third image" style="width: 150px; height: 200px"> 
+      {% endif %}      
+      <dd><input type=file name=image3 onchange="readURL3(this);">
+
       <dt><input type=submit value=Submit>
     </dl>
   </form>

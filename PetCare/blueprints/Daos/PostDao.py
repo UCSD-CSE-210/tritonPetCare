@@ -51,10 +51,24 @@ class PostDao(Dao):
 
 	def update_post(self, postInfo):
 		db = self.get_db()
-		query = ("UPDATE posts SET name=:name, species=:species, breed=:breed, gender=:gender, age=:age, vaccination=:vaccination, "
-				"start_date=:start_date, end_date=:end_date, criteria=:criteria, notes=:notes, image1=:image1, image2=:image2, "
-				"image3=:image3, post_date=:post_date WHERE id=:id"
-		)
+
+		queryString1 = "UPDATE posts SET name=:name, species=:species, breed=:breed, gender=:gender, age=:age, vaccination=:vaccination, "
+		queryString2 = "start_date=:start_date, end_date=:end_date, criteria=:criteria, notes=:notes, post_date=:post_date,"
+		query = queryString1 + queryString2
+
+		if 'image1' in postInfo:
+			query += "image1=:image1,"
+
+		if 'image2' in postInfo:
+			query += "image2=:image2,"
+
+		if 'image3' in postInfo:
+			query += "image3=:image3,"			
+
+		# Remove the last comma
+		query = query[:-1]
+		query += " WHERE id=:id"
+
 		db.execute(query, postInfo)
 		db.commit()
 		return postInfo['id']

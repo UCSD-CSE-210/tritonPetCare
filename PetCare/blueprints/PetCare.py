@@ -91,6 +91,10 @@ def list_posts():
 	postDao = PostDao()
 	posts = postDao.list_limited_posts(reputation, limit, offset)
 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
+	
+	for postInfo in postInfos:
+		postInfo['notes'] = postInfo['notes'][:24]
+
 	return render_template('list_posts.html', posts=postInfos)
 
 @bp.route('/_load_more_posts')
@@ -104,6 +108,10 @@ def load_more_posts():
 	postDao = PostDao()
 	posts = postDao.list_limited_posts(reputation, limit, offset)
 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
+	
+	for postInfo in postInfos:
+		postInfo['notes'] = postInfo['notes'][:24]
+
 	return jsonify(postInfos)
 
 @bp.route('/create_post', methods=['GET', 'POST'])
@@ -129,14 +137,16 @@ def edit_post():
 	if session.get('logged_in') is None:
 		return redirect(url_for('PetCare.login'))
 	accountDao = AccountDao()
-	postDao = PostDao()
+	postDao = PostDao()	
 	postId = accountDao.get_account_post(session['logged_in'])
+	
 	if postId is None:
 		return redirect(url_for('PetCare.create_post'))
 	prevPost = dict(postDao.get_post(postId))
 	if request.method == 'GET':
 		# TODO: return with post information shown
-		return render_template('edit_post.html', error=None)
+		return render_template('edit_post.html', error=None, prevPost=prevPost)
+	
 	postInfo = Entities.make_post_info(session['logged_in'], request, prevPost)
 	if not postInfo:
 		return render_template('edit_post.html', error="Required Informaion Missing")
@@ -146,7 +156,8 @@ def edit_post():
 
 @bp.route('/view_post', methods=['GET'])
 def view_post():
-	if session.get('logged_in') is None:
+	userId = session.get('logged_in')
+	if userId is None:
 		return redirect(url_for('PetCare.login'))
 	postDao = PostDao()
 	post = postDao.get_post(request.args['postId'])
@@ -156,7 +167,9 @@ def view_post():
 	if time.time() > post['end_date']:
 		status = 'FINISHED'
 	postInfo = Entities.make_post_output(dict(post))
-	return render_template('view_post.html', post=postInfo, status=status)
+
+	isOwner = (userId == post['owner_id'])
+	return render_template('view_post.html', post=postInfo, status=status, isOwner=isOwner)
 
 @bp.route('/delete_post', methods=['POST'])
 def delete_post():

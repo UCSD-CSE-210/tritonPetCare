@@ -102,12 +102,23 @@
 				
 			</div>
 
+			{% if isOwner %}
 			<div class="row">
-				<div class="span12">
-					<h4 class="heading">Show your Interest<span></span></h4>
-					<a href="#" class="btn btn-primary btn-large btn-rounded">I am interested!</a>
+				<div class="span3">
+					<a href="{{ url_for('PetCare.edit_post')}}" class="btn btn-primary btn-large btn-rounded" style="width: 150px;">Edit</a>
+				</div>
+				<div class="span3">
+					<a href="{{ url_for('PetCare.delete_post')}}" class="btn btn-primary btn-large btn-rounded" style="width:150px; background-color: red">Delete</a>
 				</div>
 			</div>
+			{% else %}
+			<div class="row">
+				<div class="span12">
+					<h4 class="heading">Show your interest<span></span></h4>
+					<a href="#" class="btn btn-primary btn-large btn-rounded">I am interested!</a>
+				</div>
+			</div>			
+			{% endif %}
 		</div>
 		<!-- end container -->
 	</section>

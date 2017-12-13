@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block body %}
-  <h2>Post</h2>
   {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
 
     <div class="logo" style="width: 300px; margin-left: 40%; margin-top: 5%">
@@ -10,7 +9,7 @@
   <form action="{{ url_for('PetCare.create_post') }}" enctype="multipart/form-data" method=post>
     <dl>
         <dt style="width: 200px; margin-left: 35.5%; float: left"> Name:
-        <dd> <input type=text name=name style="width: 200px">
+        <dd> <input type=text name=name>
 
         <dt style="width: 200px; margin-left: 35.5%; float: left">Species:
         <dd>
@@ -58,17 +57,16 @@
           <option value=2>2 point</option>
           <option value=3>3 point</option>
           <option value=4>4 point</option>
-          <option value=5>5 point</option>
         </select>
       <dt style="width: 200px; margin-left: 35.5%; float: left">Notes:
-      <dd><input type=text name=notes>
+      <dd><textarea name=notes rows="4" cols="50" style="width: 400px"></textarea>
       <dt style="width: 200px; margin-left: 35.5%; float: left">Image1:
       <dd><input type=file name=image1>
       <dt style="width: 200px; margin-left: 35.5%; float: left">Image2:
       <dd><input type=file name=image2>
       <dt style="width: 200px; margin-left: 35.5%; float: left">Image3:
       <dd><input type=file name=image3>
-      <dt style="width: 200px; margin-left: 35.5%; float: left"> <input type=submit value=Submit>
+      <dt><input class="btn btn-large btn-theme" type=submit value=Submit style="width: 200px; margin-left: 43.5%; margin-top: 2%">
     </dl>
   </form>
 {% endblock %}

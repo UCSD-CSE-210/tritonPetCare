@@ -86,32 +86,20 @@ def list_posts():
 		return redirect(url_for('PetCare.login'))
 	accountDao = AccountDao()
 	reputation = accountDao.get_account_reputation(session['logged_in'])		
-	offset = 0
-	limit = 4
 	postDao = PostDao()
-	posts = postDao.list_limited_posts(reputation, limit, offset)
+	posts = postDao.list_limited_posts(reputation=reputation, limit=4, offset=0)
 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
-	
-	for postInfo in postInfos:
-		postInfo['notes'] = postInfo['notes'][:24]
-
 	return render_template('list_posts.html', posts=postInfos)
 
-@bp.route('/_load_more_posts')
+@bp.route('/_load_more_posts', methods=['GET'])
 def load_more_posts():
 	if session.get('logged_in') is None:
 		return redirect(url_for('PetCare.login'))
 	accountDao = AccountDao()
-	reputation = accountDao.get_account_reputation(session['logged_in'])		
-	offset = request.args.get('offset')
-	limit = 4
+	reputation = accountDao.get_account_reputation(session['logged_in'])
 	postDao = PostDao()
-	posts = postDao.list_limited_posts(reputation, limit, offset)
+	posts = postDao.list_limited_posts(reputation=reputation, limit=4, offset=request.args.get('offset'))
 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
-	
-	for postInfo in postInfos:
-		postInfo['notes'] = postInfo['notes'][:24]
-
 	return jsonify(postInfos)
 
 @bp.route('/create_post', methods=['GET', 'POST'])
@@ -139,14 +127,11 @@ def edit_post():
 	accountDao = AccountDao()
 	postDao = PostDao()	
 	postId = accountDao.get_account_post(session['logged_in'])
-	
 	if postId is None:
 		return redirect(url_for('PetCare.create_post'))
 	prevPost = dict(postDao.get_post(postId))
 	if request.method == 'GET':
-		# TODO: return with post information shown
 		return render_template('edit_post.html', error=None, prevPost=prevPost)
-	
 	postInfo = Entities.make_post_info(session['logged_in'], request, prevPost)
 	if not postInfo:
 		return render_template('edit_post.html', error="Required Informaion Missing")
@@ -156,8 +141,7 @@ def edit_post():
 
 @bp.route('/view_post', methods=['GET'])
 def view_post():
-	userId = session.get('logged_in')
-	if userId is None:
+	if session.get('logged_in') is None:
 		return redirect(url_for('PetCare.login'))
 	postDao = PostDao()
 	post = postDao.get_post(request.args['postId'])
@@ -167,8 +151,7 @@ def view_post():
 	if time.time() > post['end_date']:
 		status = 'FINISHED'
 	postInfo = Entities.make_post_output(dict(post))
-
-	isOwner = (userId == post['owner_id'])
+	isOwner = (session.get('logged_in') == post['owner_id'])
 	return render_template('view_post.html', post=postInfo, status=status, isOwner=isOwner)
 
 @bp.route('/delete_post', methods=['POST'])

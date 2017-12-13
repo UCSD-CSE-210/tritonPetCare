@@ -12,10 +12,10 @@ class PostDao(Dao):
 
 	def check_relation(self, postId, userId):
 		db = self.get_db()
-		respond = db.execute("SELECT interested, match FROM posts WHERE id=:id", {'id': postId})
+		respond = db.execute("SELECT interested, match, review FROM posts WHERE id=:id", {'id': postId})
 		row = respond.fetchone()
 		if userId == row['match']:
-			return 'MATCHED'
+			return 'MATCHED' + ('0' if row['review'] is None else str(row['review']))
 		interestedUsers = [] if row['interested'] is None else str(row['interested']).split(',')
 		if userId in interestedUsers:
 			return 'INTERESTED'
@@ -23,12 +23,14 @@ class PostDao(Dao):
 
 	def list_all_posts(self, reputation):
 		db = self.get_db()
-		respond = db.execute("SELECT id, name, species, start_date, end_date, image1, notes FROM posts WHERE criteria<=:reputation", {'reputation': reputation})
+		respond = db.execute("SELECT id, name, species, start_date, end_date, image1, notes FROM posts WHERE criteria<=:reputation AND match IS NULL",
+				{'reputation': reputation})
 		return respond.fetchall()
 
 	def list_limited_posts(self, reputation, limit, offset):
 		db = self.get_db()
-		respond = db.execute("SELECT id, name, species, start_date, end_date, image1, notes FROM posts WHERE criteria<=:reputation LIMIT :limit OFFSET :offset;", {'reputation': reputation, 'limit': limit, 'offset': offset})
+		respond = db.execute("SELECT id, name, species, start_date, end_date, image1, notes FROM posts WHERE criteria<=:reputation AND match IS NULL LIMIT :limit OFFSET :offset",
+				{'reputation': reputation, 'limit': limit, 'offset': offset})
 		return respond.fetchall()
 
 	def add_post(self, postInfo):

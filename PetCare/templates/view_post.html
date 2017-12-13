@@ -23,7 +23,7 @@
 						<div class="accordion-group">
 							<div class="accordion-heading">
 								<a class="accordion-toggle active" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-								<i class="icon-minus"></i> Personal Information </a>
+								<i class="icon-minus"></i> Pet Information </a>
 							</div>
 							<div id="collapseOne" class="accordion-body collapse in">
 								<div class="accordion-inner">
@@ -34,7 +34,7 @@
 										Gender: {{post.gender}}
 									</p>
 									<p>
-										Breed and Species: {{post.species}}
+										Species (and Breed): {{ post.species + (' (' + post.breed + ')') if post.breed }}
 									</p>
 									<p>
 										Age: {{post.age}}
@@ -56,9 +56,20 @@
 						<div class="accordion-group">
 							<div class="accordion-heading">
 								<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
-								<i class="icon-plus"></i> Post Information </a>
+								<i class="icon-plus"></i> Notes </a>
 							</div>
 							<div id="collapseThree" class="accordion-body collapse">
+								<div class="accordion-inner">
+									{{post.notes}}
+								</div>
+							</div>
+						</div>
+						<div class="accordion-group">
+							<div class="accordion-heading">
+								<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
+								<i class="icon-plus"></i> Post Information </a>
+							</div>
+							<div id="collapseFour" class="accordion-body collapse">
 								<div class="accordion-inner">
 									<p>
 										Start Date: {{post.start_date}}
@@ -102,22 +113,31 @@
 				
 			</div>
 
-			{% if isOwner %}
-			<div class="row">
-				<div class="span3">
-					<a href="{{ url_for('PetCare.edit_post')}}" class="btn btn-primary btn-large btn-rounded" style="width: 150px;">Edit</a>
+			{% if status == 'PENDING' %}
+				{% if isOwner %}
+				<div class="row">
+					<div class="span3">
+						<a href="{{ url_for('PetCare.edit_post') }}" class="btn btn-primary btn-large btn-rounded" style="width: 150px;">Edit</a>
+					</div>
+					<div class="span3">
+						<form action="{{ url_for('PetCare.delete_post') }}" enctype="multipart/form-data" method=post>
+							<input type=hidden name=postId value={{ post.id }}>
+							<input type=submit value=Delete class="btn btn-primary btn-large btn-rounded" style="width:200px; background-color: red">
+						</form>
+					</div>
 				</div>
-				<div class="span3">
-					<a href="{{ url_for('PetCare.delete_post')}}" class="btn btn-primary btn-large btn-rounded" style="width:150px; background-color: red">Delete</a>
-				</div>
-			</div>
-			{% else %}
-			<div class="row">
-				<div class="span12">
-					<h4 class="heading">Show your interest<span></span></h4>
-					<a href="#" class="btn btn-primary btn-large btn-rounded">I am interested!</a>
-				</div>
-			</div>			
+				{% else %}
+				<div class="row">
+					<div class="span12">
+						<div class="span3">
+						<form action="{{ url_for('PetCare.interest_post') }}" enctype="multipart/form-data" method=post>
+							<input type=hidden name=postId value={{ post.id }}>
+							<input type=submit value="I'm interested!" class="btn btn-primary btn-large btn-rounded" style="width:250px;">
+						</form>
+					</div>
+					</div>
+				</div>			
+				{% endif %}
 			{% endif %}
 		</div>
 		<!-- end container -->

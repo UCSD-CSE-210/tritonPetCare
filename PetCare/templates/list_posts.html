@@ -56,7 +56,7 @@
                     jinhaoA.href = '#'
                     jinhaoA.innerHTML = post.name
                     var p = document.createElement('p')
-                    p.innerHTML = post.notes
+                    p.innerHTML = post.notes.substr(0, 100) + "..."
 
                     var readMoreLink = document.createElement('a')
                     readMoreLink.className = 'more'
@@ -114,7 +114,7 @@
                         <div class="entry-content">
                             <h5><strong><a href="#">{{ post.name }}</a></strong></h5>
                             <p>
-                                {{ post.notes }} 
+                                {{ post.notes[:100] + '...' }} 
                             </p>
                             <a href="{{ url_for('PetCare.view_post') + '?postId=' + post.id|string }}" class="more">Read more</a>
                         </div>

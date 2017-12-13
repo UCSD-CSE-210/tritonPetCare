@@ -26,7 +26,7 @@ class Entities(object):
 		postInfo['end_date'] = int(time.mktime(time.strptime(postInfo['end_date'], '%Y-%m-%d')))
 		postInfo['post_date'] = int(time.time())
 		for i in ['image1', 'image2', 'image3']:		# FIXME: what strategy to be used for uploading pictures
-			if i in input.files and len(input.files[i].filename) > 0:
+			if i in input.files and input.files[i] is not None and len(input.files[i].filename) > 0:
 				postInfo[i] = ImageHandler.save_image(input.files[i])
 				if prevPost is not None and i in prevPost:
 					ImageHandler.delete_image(prevPost[i])
@@ -38,6 +38,12 @@ class Entities(object):
 		postInfo['end_date'] = time.strftime('%m/%d/%Y', time.localtime(postInfo['end_date']))
 		if 'post_date' in postInfo:
 			postInfo['post_date'] = time.strftime('%m/%d/%Y %H:%M:%S', time.localtime(postInfo['post_date']))
+		if 'gender' in postInfo:
+			postInfo['gender'] = 'Male' if postInfo['gender'] == 1 else 'Female'
+		if 'age' in postInfo:
+			postInfo['age'] = '<1 year' if postInfo['age'] == 0 else '>= 10 years' if postInfo['age'] == 10 else (str(postInfo['age']) + ' years')
+		if 'interested' in postInfo:
+			postInfo['interested'] = [] if postInfo['interested'] is None else postInfo['interested'].split(',')
 		for i in ['image1', 'image2', 'image3']:
 			if i in postInfo and postInfo[i] is not None:
 				postInfo[i] = ImageHandler.get_image_full_path(postInfo[i])

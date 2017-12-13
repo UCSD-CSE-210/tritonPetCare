@@ -35,12 +35,12 @@
             <ul id="menu-main" class="nav">
               <li><a href="{{ url_for('PetCare.list_posts') }}">Posts</a></li>
              {% if session.logged_in %}
+              <li><a href="{{ url_for('PetCare.create_post') }}">Post Now</a></li>
               <li><a href="{{ url_for('PetCare.profile', userId=session.logged_in) }}">Profile</a></li>
               <li><a href="{{ url_for('PetCare.logout') }}">Logout</a></li>
              {% else %}
               <li><a href="{{ url_for('PetCare.login') }}">Signin</a></li>
              {% endif %}
-
             </ul>
           </nav>
         </div>

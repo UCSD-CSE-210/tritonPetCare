@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
   <form action="{{ url_for('PetCare.register') }}" method=post>
     <dl>
       <dt style="width: 200px; margin-left: 43%; margin-top: 5%">UCSD Email:
@@ -22,4 +21,5 @@
       <dt><input type=submit value=Register style="width: 150px; margin-left: 45%; margin-top: 1%" class="btn btn-large btn-theme">
     </dl>
   </form>
+  <center>{% if error %}<p class=error><strong>Reminder:</strong> {{ error }}{% endif %}</center>
 {% endblock %}

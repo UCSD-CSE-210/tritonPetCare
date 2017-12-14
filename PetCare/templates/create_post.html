@@ -1,7 +1,5 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
-
     <div class="logo" style="width: 300px; margin-left: 40%; margin-top: 5%">
         <img src="../static/Maxim/img/dog_head.png" alt="" />
     </div>
@@ -69,4 +67,5 @@
       <dt><input class="btn btn-large btn-theme" type=submit value=Submit style="width: 200px; margin-left: 43.5%; margin-top: 2%">
     </dl>
   </form>
+  <center>{% if error %}<p class=error><strong>Reminder:</strong> {{ error }}{% endif %}</center>
 {% endblock %}

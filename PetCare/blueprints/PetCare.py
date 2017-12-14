@@ -194,7 +194,9 @@ def view_post():
 		status = 'FINISHED'
 	postInfo = Entities.make_post_output(dict(post))
 	isOwner = (session.get('logged_in') == post['owner_id'])
-	return render_template('view_post.html', post=postInfo, status=status, isOwner=isOwner)
+	accountDao = AccountDao()
+	ownername =  accountDao.get_name(post['owner_id'])
+	return render_template('view_post.html', post=postInfo, status=status, isOwner=isOwner, owner=ownername)
 
 @bp.route('/delete_post', methods=['POST'])
 def delete_post():

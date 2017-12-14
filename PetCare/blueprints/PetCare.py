@@ -193,7 +193,7 @@ def prompt_login():
 		return render_template('prompt_login.html', userId=request.args['userId'].rstrip(), targetId=request.args['targetId'], error=None)
 	accountDao = AccountDao()
 	if not accountDao.check_account_id_password(request.form['userId'], request.form['password']):
-		return render_template('prompt_login.html', userId=request.form['userId'], targetId=request.form['password'], error="Wrong Password")
+		return render_template('prompt_login.html', userId=request.form['userId'], targetId=request.form['targetId'], error="Wrong Password")
 	session['logged_in'] = request.form['userId']
 	return redirect(url_for('PetCare.profile', userId=request.form['targetId']))
 

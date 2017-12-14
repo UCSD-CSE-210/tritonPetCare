@@ -34,91 +34,134 @@
       }
     </style>
 </head>
-  <header class="w3-container w3-center w3-padding-48 w3-white">
-    {% for post in posts%}
-    <img class="max-img" src="{{post.image1}}" />
-  {% endfor %}
-  <h1>{{account.name}}</h1>
-</header>
 
-<div class="w3-card-4 w3-margin w3-white">
-    <div class="w3-container", align="center">
-      <h2><b>Personal Information: </b></h2>
-      <h3><b>Age: {{account.age}} </b></h3>
-      {% if account.gender == 1 %}
-        <h3><b>Gender: Male </b></h3>
-      {% else %}
-        <h3><b>Gender: Female </b></h3>
-      {% endif %}
-      <h3><b>Department: {{account.department}} </b></h3>
-      <h3><b>College: {{account.college}} </b></h3>
-      <h3><b>Reputation: {{account.reputation_sum/account.reputation_num}}</b></h3>
-      <h3><b>Reviewed: {{account.reputation_num}}</b></h3>
-      <h3><b>Reviewed: {{account.reputation_sum}}</b></h3>
-    </div>
-</div>
-
-<div class="w3-card-4 w3-margin w3-white", align="center">
-  {% if posts|length == 0 %}
-    <h2><b>No avaible post!</b></h2>
-  {% else %}
-    <h2>Posts</h2>
-    {% for post in posts %}
-      <div class="w3-card-4 w3-margin w3-white">
-        <div class="w3-container">
-          <h3><b>{{post.name}}</b></h3>
-          <h5><span class="w3-opacity">{{post.post_date}}</span></h5>
-        </div>
-
-        <div class="w3-container">
-          {% if post.gender == 1 %}
-            <p>Species: {{post.species}}, Age: {{post.age}}, Gender: Male, Start Date: {{post.start_date}}, End Date: {{post.end_date}} </p>
-          {% else %}
-            <p>Species: {{post.species}}, Age: {{post.age}}, Gender: Female, Start Date: {{post.start_date}}, End Date: {{post.end_date}} </p>
-          {% endif %}
-        </div>
-        <div class="post-image">
-          <img class="max-img" src="{{post.image1}}" />
-        </div>
-        <div class="w3-container">
-          <div class="w3-row">
-            <div class="w3-col m8 s12">
-              <p align="right"><button class="w3-button w3-padding-large w3-white w3-border"><b>READ MORE »</b></button></p>
-            </div>
-          </div>
+  <section class="spacer green">
+    <div class="container">
+      <div class="row">
+        <div class="span12 aligncenter flyUp">
+          <h2 class="pagetitle">{{account.name}}
         </div>
       </div>
-      <hr>
-    {% endfor %}
-  {% endif %}
-</div>
-{% if session.logged_in %}
-    <ul class=post>
-    <li><h2>{{ account.name }}</h2>
-      {{ account.id + '\t' }}
-    {% if status == 'INTERESTED' %}
-      <form action="{{ url_for('PetCare.match') }}" method=post>
-      <dl>
-        <dt><input type=hidden name=userId value={{ request.args['userId'] }}>
-        <dt><input type=submit value=Approve>
-      </dl>
-    {% endif %}
-    {% if status[:7] == 'MATCHED' %}
-      <form action="{{ url_for('PetCare.review') }}" method=post>
-      <dl>
-        <div class="stars">
-          {% for i in [5, 4, 3, 2, 1] %}
-            {% if i|string == status[7] %}
-              <input class={{"star star-"+i|string}} id={{"star-"+i|string}} type=radio name=review value={{i}} checked />
-            {% else %}
-              <input class={{"star star-"+i|string}} id={{"star-"+i|string}} type=radio name=review value={{i}} />
+    </div>
+  </section>
+  
+  <!-- section: team -->
+  <section id="maincontent" class="inner">
+    <div class="container">
+      <div class="row">
+
+        <div class="span6">
+          <h4>Main Information</h4>
+          <!-- start: Accordion -->
+          <div class="accordion" id="accordion2">
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle active">Public Information</a>
+              </div>
+              <div id="collapseOne" class="accordion-body collapse in">
+                <div class="accordion-inner">
+                  <p>
+                    Account Id: {{ account.id }}
+                  </p>
+                  <p>
+                    Name: {{ account.name }}
+                  </p>
+                  <p>
+                    Gender: {{ 'Male' if account.gender==1 else 'Female' }}
+                  </p>
+                  <p>
+                    Age: {{ account.age }}
+                  </p>
+                  <p>
+                    Departement: {{ account.department }}
+                  </p>
+                  <p>
+                    College: {{ account.college }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            {% if session.logged_in == account.id %}
+              <div class="accordion-group">
+                <div class="accordion-heading">
+                  <a class="accordion-toggle active">Private Information</a>
+                </div>
+                <div id="collapseTwo" class="accordion-body collapse in">
+                  <div class="accordion-inner">
+                    <p>
+                      Email: {{ account.email + "@ucsd.edu" }}
+                    </p>
+                    <p>
+                      Reputation: {{ account.reputation_sum / account.reputation_num }}
+                    </p>
+                  </div>
+                </div>
+              </div>
             {% endif %}
-            <label class={{"star star-"+i|string}} for={{"star-"+i|string}}></label>
-          {% endfor %}
+          </div>
+          <!--end: Accordion -->
         </div>
-        <dt><input type=submit value="Submit Review">
-      </dl>
-    {% endif %}
-    </ul>
-  {% endif %}
+
+        <div class="span6">
+          <h4>Post History</h4>
+          {% if posts|length == 0 %}
+            <h4>This user has not posted anything yet.</h4>
+          {% else %}
+            <div class="tabbable">
+              <ul class="nav nav-tabs">
+                <li class="active"><a href="#post1" data-toggle="tab">1</a></li>
+                {% for i in range(2,posts|length+1) %}
+                  <li><a href={{"#post"+i|string}} data-toggle="tab">{{i}}</a></li>
+                {% endfor %}
+              </ul>
+              <div class="tab-content">
+                {% for i in range(1,posts|length+1) %}
+                  <div class="tab-pane active" id={{"post"+i|string}}>
+                    <img src="{{ posts[i-1].image1 }}" alt="Mountain View">
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if status == 'INTERESTED' %}
+        <div class="row">
+          <div class="span12">
+            <div class="span3">
+              <form action="{{ url_for('PetCare.match') }}" method=post>
+                <input type=hidden name=userId value={{ request.args['userId'] }}>
+                <input type=submit value=Approve class="btn btn-primary btn-large btn-rounded" style="width:250px;">
+              </form>
+            </div>
+          </div>
+        </div> 
+      {% endif %}
+      {% if status[:7] == 'MATCHED' %}
+        <div class="row">
+          <div class="span12">
+            <div class="span3">
+              <form action="{{ url_for('PetCare.review') }}" method=post>
+                <div class="stars" style="width: 300px; margin-left: 32%">
+                  {% for i in [5, 4, 3, 2, 1] %}
+                    {% if i|string == status[7] %}
+                      <input class={{"star star-"+i|string}} id={{"star-"+i|string}} type=radio name=review value={{i}} checked />
+                    {% else %}
+                      <input class={{"star star-"+i|string}} id={{"star-"+i|string}} type=radio name=review value={{i}} />
+                    {% endif %}
+                    <label class={{"star star-"+i|string}} for={{"star-"+i|string}}></label>
+                  {% endfor %}
+                </div>
+                <input class="btn btn-large btn-theme" type=submit value="Submit Review" style="width: 300px; margin-left: 38%; margin-top: 2%">
+              </form>
+            </div>
+          </div>
+        </div> 
+      {% endif %}
+
+    </div>
+    <!-- end container -->
+  </section>
+
 {% endblock %}

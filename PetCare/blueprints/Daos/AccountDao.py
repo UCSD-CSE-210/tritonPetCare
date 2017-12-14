@@ -22,6 +22,11 @@ class AccountDao(Dao):
 		db.execute(query, accountInfo)
 		db.commit()
 		return True
+	def get_name(self, accountId):
+		db = self.get_db()
+		respond = db.execute("SELECT name FROM accounts WHERE id=:id", {'id': accountId})
+		return respond.fetchone()['name']
+		
 
 	def authenticate_account(self, userId, code):
 		db = self.get_db()
@@ -57,7 +62,8 @@ class AccountDao(Dao):
 	def get_account_post(self, userId):
 		db = self.get_db()
 		respond = db.execute("SELECT current_post FROM accounts WHERE id=:id", {'id': userId})
-		return respond.fetchone()['current_post']
+		row = respond.fetchone()
+		return row['current_post']
 
 	def update_account_post(self, userId, postId):
 		db = self.get_db()

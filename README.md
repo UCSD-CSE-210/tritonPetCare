@@ -16,3 +16,7 @@ Run application:
 
 Access database:
 >>sqlite3 PetCare/PetCare.db
+
+Tests:
+>>cd PetCare
+>>python tests/PetCareTests.py

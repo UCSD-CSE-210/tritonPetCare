@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
 
   <div class="logo" style="width: 300px; margin-left: 40%; margin-top: 3%">
     <img src="../static/Maxim/img/loginHead2.png" alt="" />
@@ -17,8 +16,9 @@
   </form>
 
   
-  <a class="btn btn-large btn-theme" style="width: 150px; height: 23px; margin-left: 43.5%;" href="{{ url_for('PetCare.register') }}">Register</a>
+  <a class="btn btn-large btn-theme" style="width: 150px; height: 23px; margin-left: 43.5%; margin-bottom: 1%;" href="{{ url_for('PetCare.register') }}">Register</a>
 
+  <center>{% if error %}<p class=error><strong>Reminder:</strong> {{ error }}{% endif %}</center>
 
   <div class="logo" style="width: 600px; margin-left: 62%; margin-top: -14%; margin-bottom: 8%">
     <img src="../static/Maxim/img/doghomepage.gif" alt="" />

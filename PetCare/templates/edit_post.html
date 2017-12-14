@@ -43,13 +43,12 @@
         </script>
     </head>
 
-  <h2>Post</h2>
   {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
   <form action="{{ url_for('PetCare.edit_post') }}" enctype="multipart/form-data" method=post>
-    <dl>
-      <dt>Name:
+    <div style="margin-left: 35%; margin-top: 5%">
+      <dt style="margin-left: 2%;">Name:
       <dd><input type=text name=name value={{prevPost.name}}>
-      <dt>Species:
+      <dt style="margin-left: 2%;">Species:
       <dd>
         <select name=species>
           {% if prevPost is not none and prevPost.species == 'Dog' %}
@@ -70,9 +69,9 @@
           <option value="Bird">Bird</option>
           {% endif %}
         </select>
-      <dt>Breed:
+      <dt style="margin-left: 2%;">Breed:
       <dd><input type=text name=breed value={{prevPost.breed}}>
-      <dt>Gender:
+      <dt style="margin-left: 2%;">Gender:
       <dd>
         {% if prevPost.gender == 1 %}
         <input type=radio name=gender value=1 checked>Male
@@ -81,7 +80,7 @@
         <input type=radio name=gender value=1>Male
         <input type=radio name=gender value=0 checked>Female
         {% endif %}
-      <dt>Age:
+      <dt style="margin-left: 2%;">Age:
       <dd>
         <select name=age>
           {% if prevPost is not none and prevPost.age < 1 %}
@@ -150,13 +149,13 @@
           <option value=10> >= 10 year</option>
           {% endif %}
         </select>
-      <dt>Vaccination:
+      <dt style="margin-left: 2%;">Vaccination:
       <dd><input type=text name=vaccination value='{{prevPost.vaccination}}'>
-      <dt>Start Date:
+      <dt style="margin-left: 2%;">Start Date:
       <dd><input type=date name=start_date value='{{prevPost.start_date_year_first}}'>
-      <dt>End Date:
+      <dt style="margin-left: 2%;">End Date:
       <dd><input type=date name=end_date value='{{prevPost.end_date_year_first}}'>
-      <dt>Criteria:
+      <dt style="margin-left: 2%;">Criteria:
       <dd>
         <select name=criteria>
           {% if prevPost.criteria == 0 %}
@@ -195,34 +194,45 @@
           <option value=5>5 point</option>
           {% endif%}
         </select>
-      <dt>Notes:
+      <dt style="margin-left: 2%;">Notes:
       <dd><input type=text name=notes value='{{prevPost.notes}}'>
+    </div>
+    <div class="row" style="margin-left:6.25%; margin-top: 2%">
+      <div class="span4">
+        <div class="row">
+          {% if prevPost.image1|length > 0 %}
+          <img id="img1" src="{{ prevPost.image1 }}" alt="first image" style="width: 150px; height: 200px"> 
+          {% else %}
+          <img id="img1" src="#" alt="first image" style="width: 150px; height: 200px"> 
+          {% endif %}      
+        </div>    
+        <label class="btn btn-small btn-rounded btn-primary" style="margin-top: 2%;"><input type=file name=image1 onchange="readURL1(this);" style="display:none">Browse File</label>
+      </div>
       
-      <dt>Image1:
-      {% if prevPost.image1|length > 0 %}
-      <dd><img id="img1" src="{{ prevPost.image1 }}" alt="first image" style="width: 150px; height: 200px"> 
-      {% else %}
-      <dd><img id="img1" src="#" alt="first image" style="width: 150px; height: 200px"> 
-      {% endif %}      
-      <dd><input type=file name=image1 onchange="readURL1(this);">
-      
-      <dt>Image2:
-      {% if prevPost.image2|length > 0 %}
-      <dd><img id="img2" src="{{ prevPost.image2 }}" alt="second image" style="width: 150px; height: 200px"> 
-      {% else %}
-      <dd><img id="img2" src="#" alt="second image" style="width: 150px; height: 200px"> 
-      {% endif %}      
-      <dd><input type=file name=image2 onchange="readURL2(this);">
+      <div class="span4">
+        <div class="row">
+          {% if prevPost.image2|length > 0 %}
+          <img id="img2" src="{{ prevPost.image2 }}" alt="second image" style="width: 150px; height: 200px"> 
+          {% else %}
+          <img id="img2" src="#" alt="second image" style="width: 150px; height: 200px"> 
+          {% endif %}      
+        </div>
+        <label class="btn btn-small btn-rounded btn-primary" style="margin-top: 2%;"><input type=file name=image2 onchange="readURL2(this);" style="display:none">Browse File</label>
+      </div>
 
-      <dt>Image3:
-      {% if prevPost.image3|length > 0 %}
-      <dd><img id="img3" src="{{ prevPost.image3 }}" alt="third image" style="width: 150px; height: 200px"> 
-      {% else %}
-      <dd><img id="img3" src="#" alt="third image" style="width: 150px; height: 200px"> 
-      {% endif %}      
-      <dd><input type=file name=image3 onchange="readURL3(this);">
+      <div class="span4">
+        <div class="row">
+          {% if prevPost.image3|length > 0 %}
+          <img id="img3" src="{{ prevPost.image3 }}" alt="third image" style="width: 150px; height: 200px"> 
+          {% else %}
+          <img id="img3" src="#" alt="third image" style="width: 150px; height: 200px"> 
+          {% endif %}      
+        </div>
+        <label class="btn btn-small btn-rounded btn-primary" style="margin-top: 2%;"><input type=file name=image3 onchange="readURL3(this);" style="display:none">Browse File</label>
+      </div>
+    </div>
+    
+    <input class="btn btn-large btn-theme" type=submit value=Submit style="margin-left: 40%; margin-top: 4%; margin-bottom: 5%">
 
-      <dt><input type=submit value=Submit>
-    </dl>
   </form>
 {% endblock %}

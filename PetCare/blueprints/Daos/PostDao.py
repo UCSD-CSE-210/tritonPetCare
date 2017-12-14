@@ -15,11 +15,13 @@ class PostDao(Dao):
 		print postId
 		respond = db.execute("SELECT interested, match, review FROM posts WHERE id=:id", {'id': postId})
 		row = respond.fetchone()
-		if userId == row['match']:
-			return 'MATCHED' + ('0' if row['review'] is None else str(row['review']))
-		interestedUsers = [] if row['interested'] is None else str(row['interested']).split(',')
-		if userId in interestedUsers:
-			return 'INTERESTED'
+		#test whether row is empty
+		if row:
+			if userId == row['match']:
+				return 'MATCHED' + ('0' if row['review'] is None else str(row['review']))
+			interestedUsers = [] if row['interested'] is None else str(row['interested']).split(',')
+			if userId in interestedUsers:
+				return 'INTERESTED'
 		return 'UNRELATED'
 
 	def list_all_posts(self, reputation):

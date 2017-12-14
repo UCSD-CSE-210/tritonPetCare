@@ -44,6 +44,19 @@
 						</div>
 						<div class="accordion-group">
 							<div class="accordion-heading">
+								<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
+								<i class="icon-plus"></i> Owner </a>
+							</div>
+							<div id="collapseThree" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<a href="{{ url_for('PetCare.profile')~'?login='~session.logged_in~'&userId='~post.owner_id }}">
+										Name: {{owner}}
+									</a>
+								</div>
+							</div>
+						</div>
+						<div class="accordion-group">
+							<div class="accordion-heading">
 								<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
 								<i class="icon-plus"></i> Vaccination </a>
 							</div>

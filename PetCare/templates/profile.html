@@ -1,7 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
-  <head>
-    <style>
+<head>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <style>
       <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
       div.stars {
         width: 270px;
@@ -31,12 +33,69 @@
         font-family: FontAwesome;
       }
     </style>
-  </head>
+</head>
+  <header class="w3-container w3-center w3-padding-48 w3-white">
+    {% for post in posts%}
+    <img class="max-img" src="{{post.image1}}" />
+  {% endfor %}
+  <h1>{{account.name}}</h1>
+</header>
 
-  {% if session.logged_in %}
+<div class="w3-card-4 w3-margin w3-white">
+    <div class="w3-container", align="center">
+      <h2><b>Personal Information: </b></h2>
+      <h3><b>Age: {{account.age}} </b></h3>
+      {% if account.gender == 1 %}
+        <h3><b>Gender: Male </b></h3>
+      {% else %}
+        <h3><b>Gender: Female </b></h3>
+      {% endif %}
+      <h3><b>Department: {{account.department}} </b></h3>
+      <h3><b>College: {{account.college}} </b></h3>
+      <h3><b>Reputation: {{account.reputation_sum/account.reputation_num}}</b></h3>
+      <h3><b>Reviewed: {{account.reputation_num}}</b></h3>
+      <h3><b>Reviewed: {{account.reputation_sum}}</b></h3>
+    </div>
+</div>
+
+<div class="w3-card-4 w3-margin w3-white", align="center">
+  {% if posts|length == 0 %}
+    <h2><b>No avaible post!</b></h2>
+  {% else %}
+    <h2>Posts</h2>
+    {% for post in posts %}
+      <div class="w3-card-4 w3-margin w3-white">
+        <div class="w3-container">
+          <h3><b>{{post.name}}</b></h3>
+          <h5><span class="w3-opacity">{{post.post_date}}</span></h5>
+        </div>
+
+        <div class="w3-container">
+          {% if post.gender == 1 %}
+            <p>Species: {{post.species}}, Age: {{post.age}}, Gender: Male, Start Date: {{post.start_date}}, End Date: {{post.end_date}} </p>
+          {% else %}
+            <p>Species: {{post.species}}, Age: {{post.age}}, Gender: Female, Start Date: {{post.start_date}}, End Date: {{post.end_date}} </p>
+          {% endif %}
+        </div>
+        <div class="post-image">
+          <img class="max-img" src="{{post.image1}}" />
+        </div>
+        <div class="w3-container">
+          <div class="w3-row">
+            <div class="w3-col m8 s12">
+              <p align="right"><button class="w3-button w3-padding-large w3-white w3-border"><b>READ MORE »</b></button></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+    {% endfor %}
+  {% endif %}
+</div>
+{% if session.logged_in %}
     <ul class=post>
     <li><h2>{{ account.name }}</h2>
-    	{{ account.id + '\t' }}
+      {{ account.id + '\t' }}
     {% if status == 'INTERESTED' %}
       <form action="{{ url_for('PetCare.match') }}" method=post>
       <dl>

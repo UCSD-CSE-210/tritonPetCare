@@ -38,10 +38,10 @@ def register():
 @bp.route('/authenticate', methods=['GET'])
 def authenticate():
 	accountDao = AccountDao()
-	isAuthPass = accountDao.authenticate_account(request.args['userId'], request.args['code'])
+	isAuthPass = accountDao.authenticate_account(request.args['userId'].rstrip(), request.args['code'])
 	if not isAuthPass:
 		return render_template('login.html', error="Authentication Failed")
-	session['logged_in'] = request.args['userId']
+	session['logged_in'] = request.args['userId'].rstrip()
 	return redirect(url_for('PetCare.list_posts'))
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -70,14 +70,14 @@ def profile():
 		if 'login' not in request.args:
 			return redirect(url_for('PetCare.login')) 
 		else:
-			return redirect(url_for('PetCare.prompt_login', userId=request.args['login'], targetId=request.args['userId']))
+			return redirect(url_for('PetCare.prompt_login', userId=request.args['login'], targetId=request.args['userId'].rstrip()))
 	accountDao = AccountDao()
 	postDao = PostDao()
-	accountInfo = accountDao.get_account_info(request.args['userId'])
-	posts = postDao.get_user_posts(request.args['userId'])
+	accountInfo = accountDao.get_account_info(request.args['userId'].rstrip())
+	posts = postDao.get_user_posts(request.args['userId'].rstrip())
 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
-	myCurrentPostId = accountDao.get_account_post(session['logged_in'])
-	status = 'UNRELATED' if myCurrentPostId is None else postDao.check_relation(myCurrentPostId, request.args['userId'])
+	myCurrentPostId = accountDao.get_account_post(session['logged_in'].rstrip())
+	status = 'UNRELATED' if myCurrentPostId is None else postDao.check_relation(myCurrentPostId, request.args['userId'].rstrip())
 	return render_template('profile.html', account=accountInfo, posts=postInfos, status=status)
 
 @bp.route('/list_posts', methods=['GET'])
@@ -85,7 +85,7 @@ def list_posts():
 	if session.get('logged_in') is None:
 		return redirect(url_for('PetCare.login'))
 	accountDao = AccountDao()
-	reputation = accountDao.get_account_reputation(session['logged_in'])		
+	reputation = accountDao.get_account_reputation(session['logged_in'].rstrip())		
 	postDao = PostDao()
 	posts = postDao.list_limited_posts(reputation=reputation, limit=4, offset=0)
 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
@@ -96,7 +96,7 @@ def load_more_posts():
 	if session.get('logged_in') is None:
 		return redirect(url_for('PetCare.login'))
 	accountDao = AccountDao()
-	reputation = accountDao.get_account_reputation(session['logged_in'])
+	reputation = accountDao.get_account_reputation(session['logged_in'].rstrip())
 	postDao = PostDao()
 	posts = postDao.list_limited_posts(reputation=reputation, limit=4, offset=request.args.get('offset'))
 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
@@ -108,16 +108,16 @@ def create_post():
 		return redirect(url_for('PetCare.login'))
 	accountDao = AccountDao()
 	postDao = PostDao()
-	postId = accountDao.get_account_post(session['logged_in'])
+	postId = accountDao.get_account_post(session['logged_in'].rstrip())
 	if postId is not None:
 		return redirect(url_for('PetCare.edit_post'))
 	if request.method == 'GET':
 		return render_template('create_post.html', error=None)
-	postInfo = Entities.make_post_info(session['logged_in'], request)
+	postInfo = Entities.make_post_info(session['logged_in'].rstrip(), request)
 	if not postInfo:
 		return render_template('create_post.html', error="Required Informaion Missing")
 	postId = postDao.add_post(postInfo)
-	accountDao.update_account_post(session['logged_in'], postId)
+	accountDao.update_account_post(session['logged_in'].rstrip(), postId)
 	return redirect(url_for('PetCare.list_posts'))
 
 @bp.route('/edit_post', methods=['GET', 'POST'])
@@ -126,7 +126,7 @@ def edit_post():
 		return redirect(url_for('PetCare.login'))
 	accountDao = AccountDao()
 	postDao = PostDao()	
-	postId = accountDao.get_account_post(session['logged_in'])
+	postId = accountDao.get_account_post(session['logged_in'].rstrip())
 	
 	if postId is None:
 		return redirect(url_for('PetCare.create_post'))
@@ -137,7 +137,7 @@ def edit_post():
 		return render_template('edit_post.html', error=None, prevPost=prevPostInfo)
 
 	prevPostDict = dict(prevPost)
-	postInfo = Entities.make_post_info(session['logged_in'], request, prevPostDict)
+	postInfo = Entities.make_post_info(session['logged_in'].rstrip(), request, prevPostDict)
 	if not postInfo:
 		return render_template('edit_post.html', error="Required Informaion Missing", prevPost=None)
 	
@@ -165,7 +165,7 @@ def delete_post():
 	if session.get('logged_in') is None:
 		return redirect(url_for('PetCare.login'))
 	accountDao = AccountDao()
-	ownerMatched = accountDao.remove_account_post(session['logged_in'], request.form['postId'])
+	ownerMatched = accountDao.remove_account_post(session['logged_in'].rstrip(), request.form['postId'])
 	if not ownerMatched:
 		return redirect(url_for('PetCare.list_posts'))
 	postDao = PostDao()
@@ -180,17 +180,17 @@ def interest_post():
 		return redirect(url_for('PetCare.login'))
 	accountDao = AccountDao()
 	postDao = PostDao()
-	postOwnerId = postDao.add_interest(request.form['postId'], session['logged_in'])
+	postOwnerId = postDao.add_interest(request.form['postId'], session['logged_in'].rstrip())
 	if postOwnerId:
 		postOwnerEmail = accountDao.get_account_email(postOwnerId)
-		userEmail = accountDao.get_account_email(session['logged_in'])
-		EmailHandler.send_interest(postOwnerId, postOwnerEmail, session['logged_in'], userEmail)
+		userEmail = accountDao.get_account_email(session['logged_in'].rstrip())
+		EmailHandler.send_interest(postOwnerId, postOwnerEmail, session['logged_in'].rstrip(), userEmail)
 	return redirect(url_for('PetCare.list_posts'))
 
 @bp.route('/prompt_login', methods=['GET', 'POST'])
 def prompt_login():
 	if request.method == 'GET':
-		return render_template('prompt_login.html', userId=request.args['userId'], targetId=request.args['targetId'], error=None)
+		return render_template('prompt_login.html', userId=request.args['userId'].rstrip(), targetId=request.args['targetId'], error=None)
 	accountDao = AccountDao()
 	if not accountDao.check_account_id_password(request.form['userId'], request.form['password']):
 		return render_template('prompt_login.html', userId=request.form['userId'], targetId=request.form['password'], error="Wrong Password")
@@ -202,12 +202,12 @@ def match():
 	if session.get('logged_in') is None:
 		return redirect(url_for('PetCare.login'))
 	accountDao = AccountDao()
-	postId = accountDao.get_account_post(session['logged_in'])
+	postId = accountDao.get_account_post(session['logged_in'].rstrip())
 	if postId is not None:
 		postDao = PostDao()
 		if postDao.add_match(postId, request.form['userId']):
 			careGiverEmail = accountDao.get_account_email(request.form['userId'])
-			userEmail = accountDao.get_account_email(session['logged_in'])
+			userEmail = accountDao.get_account_email(session['logged_in'].rstrip())
 			EmailHandler.send_approval(careGiverEmail, postId, userEmail)
 	return redirect(url_for('PetCare.profile', userId=request.form['userId']))
 
@@ -216,7 +216,7 @@ def review():
 	if session.get('logged_in') is None:
 		return redirect(url_for('PetCare.login'))
 	accountDao = AccountDao()
-	postId = accountDao.get_account_post(session['logged_in'])
+	postId = accountDao.get_account_post(session['logged_in'].rstrip())
 	if postId is not None:
 		postDao = PostDao()
 		post = postDao.get_post(postId)
@@ -224,6 +224,6 @@ def review():
 			postDao.update_review(post['id'], int(request.form['review']))
 			accountDao.update_account_reputation(post['match'], int(request.form['review']), post['review'])
 			if time.time() > post['end_date']:
-				accountDao.remove_account_post(session['logged_in'], post['id'])
+				accountDao.remove_account_post(session['logged_in'].rstrip(), post['id'])
 			return redirect(url_for('PetCare.profile', userId=post['match']))
 	return redirect(url_for('PetCare.list_posts'))

@@ -12,6 +12,7 @@ class PostDao(Dao):
 
 	def check_relation(self, postId, userId):
 		db = self.get_db()
+		print postId
 		respond = db.execute("SELECT interested, match, review FROM posts WHERE id=:id", {'id': postId})
 		row = respond.fetchone()
 		if userId == row['match']:

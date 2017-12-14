@@ -89,7 +89,7 @@ def list_posts():
 	postDao = PostDao()
 	posts = postDao.list_limited_posts(reputation=reputation, limit=4, offset=0)
 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
-	return render_template('list_posts.html', posts=postInfos)
+	return render_template('list_posts.html', posts=postInfos, fromFilter=False)
 
 @bp.route('/_load_more_posts', methods=['GET'])
 def load_more_posts():
@@ -101,6 +101,42 @@ def load_more_posts():
 	posts = postDao.list_limited_posts(reputation=reputation, limit=4, offset=request.args.get('offset'))
 	postInfos = [Entities.make_post_output(dict(post)) for post in posts]
 	return jsonify(postInfos)
+
+@bp.route('/filter_posts', methods=['POST'])
+def filter_posts():
+	if session.get('logged_in') is None:
+		return redirect(url_for('PetCare.login'))
+
+	gender_filter = request.form['gender']
+	species_filter = request.form['species']
+	age_filter = request.form['age']
+
+	start_date = request.form['start_date']
+	end_date = request.form['end_date']
+	start_date_value = int(time.mktime(time.strptime(start_date, '%Y-%m-%d'))) if len(start_date) > 0 else 0
+	end_date_value = int(time.mktime(time.strptime(end_date, '%Y-%m-%d'))) if len(end_date) > 0 else 0
+
+	accountDao = AccountDao()
+	reputation = accountDao.get_account_reputation(session['logged_in'])
+	postDao = PostDao()
+	all_posts = postDao.list_all_posts(reputation=reputation)
+
+	filtered_posts = []
+	for post in all_posts:
+		if gender_filter != '-1' and int(gender_filter) != post['gender']:
+			continue
+		if len(species_filter) > 0 and species_filter != post['species']:
+			continue
+		if age_filter != '-1' and int(age_filter) != post['age']:
+			continue
+		if len(start_date) > 0 and post['start_date'] < start_date_value:
+			continue
+		if len(end_date) > 0 and post['end_date'] > end_date_value:
+			continue			
+		filtered_posts.append(post)
+
+	postInfos = [Entities.make_post_output(dict(post)) for post in filtered_posts]
+	return render_template('list_posts.html', posts=postInfos, fromFilter=True)
 
 @bp.route('/create_post', methods=['GET', 'POST'])
 def create_post():

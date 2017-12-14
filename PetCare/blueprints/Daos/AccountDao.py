@@ -35,7 +35,7 @@ class AccountDao(Dao):
 
 	def check_account_email_password(self, email, password):
 		db = self.get_db()
-		respond = db.execute("SELECT id, password FROM accounts WHERE email=:email", {'email': email})
+		respond = db.execute("SELECT id, password FROM accounts WHERE email=:email AND verified=1", {'email': email})
 		row = respond.fetchone()
 		if row is None:
 			return None
@@ -81,7 +81,7 @@ class AccountDao(Dao):
 
 	def check_account_id_password(self, userId, password):
 		db = self.get_db()
-		respond = db.execute("SELECT password FROM accounts WHERE id=:id", {'id': userId})
+		respond = db.execute("SELECT password FROM accounts WHERE id=:id AND verified=1", {'id': userId})
 		row = respond.fetchone()
 		if row is None:
 			return None

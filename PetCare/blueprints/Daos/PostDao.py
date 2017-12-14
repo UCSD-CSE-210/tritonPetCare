@@ -23,13 +23,13 @@ class PostDao(Dao):
 
 	def list_all_posts(self, reputation):
 		db = self.get_db()
-		respond = db.execute("SELECT id, name, species, start_date, end_date, image1, notes FROM posts WHERE criteria<=:reputation AND match IS NULL",
+		respond = db.execute("SELECT id, name, species, start_date, end_date, image1, notes, age, gender FROM posts WHERE criteria<=:reputation AND match IS NULL",
 				{'reputation': reputation})
 		return respond.fetchall()
 
 	def list_limited_posts(self, reputation, limit, offset):
 		db = self.get_db()
-		respond = db.execute("SELECT id, name, species, start_date, end_date, image1, notes FROM posts WHERE criteria<=:reputation AND match IS NULL LIMIT :limit OFFSET :offset",
+		respond = db.execute("SELECT id, name, species, start_date, end_date, image1, notes, age, gender FROM posts WHERE criteria<=:reputation AND match IS NULL LIMIT :limit OFFSET :offset",
 				{'reputation': reputation, 'limit': limit, 'offset': offset})
 		return respond.fetchall()
 

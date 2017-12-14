@@ -43,7 +43,6 @@
         </script>
     </head>
 
-  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
   <form action="{{ url_for('PetCare.edit_post') }}" enctype="multipart/form-data" method=post>
     <div style="margin-left: 35%; margin-top: 5%">
       <dt style="margin-left: 2%;">Name:
@@ -233,6 +232,6 @@
     </div>
     
     <input class="btn btn-large btn-theme" type=submit value=Submit style="margin-left: 40%; margin-top: 4%; margin-bottom: 5%">
-
   </form>
+  <center>{% if error %}<p class=error><strong>Reminder:</strong> {{ error }}{% endif %}</center>
 {% endblock %}

@@ -22,11 +22,11 @@ class AccountDao(Dao):
 		db.execute(query, accountInfo)
 		db.commit()
 		return True
+
 	def get_name(self, accountId):
 		db = self.get_db()
 		respond = db.execute("SELECT name FROM accounts WHERE id=:id", {'id': accountId})
 		return respond.fetchone()['name']
-		
 
 	def authenticate_account(self, userId, code):
 		db = self.get_db()

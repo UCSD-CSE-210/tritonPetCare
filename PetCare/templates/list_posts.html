@@ -24,6 +24,9 @@
                   for (i = 0; i < data.length; i++) {
                     post = data[i]
 
+                    var cellA = document.createElement('a')
+                    cellA.href = '{{ url_for('PetCare.view_post')}}'.concat('?postId=').concat(post.id)
+
                     var span3Div = document.createElement('div')
                     span3Div.className = 'span3 postCell'
                     
@@ -57,13 +60,9 @@
                     jinhaoA.innerHTML = post.name
                     var p = document.createElement('p')
                     p.innerHTML = post.notes.substr(0, 100) + "..."
-
-                    var readMoreLink = document.createElement('a')
-                    readMoreLink.className = 'more'
-                    readMoreLink.href = '{{ url_for('PetCare.view_post')}}'.concat('?postId=').concat(post.id)
-                    readMoreLink.innerHTML = 'Read More'
-
-                    rowDiv.appendChild(span3Div)
+                    
+                    rowDiv.appendChild(cellA)
+                    cellA.appendChild(span3Div)
                     span3Div.appendChild(homePostDiv)                                      
                     
                     homePostDiv.appendChild(postImageDiv)
@@ -76,7 +75,6 @@
                     postMetaDiv.appendChild(dateSpan2)
                     entryContentDiv.appendChild(h5)
                     entryContentDiv.appendChild(p)
-                    entryContentDiv.appendChild(readMoreLink)
 
                     h5.appendChild(strong)
                     strong.appendChild(jinhaoA)
@@ -169,7 +167,6 @@
                                 <p>
                                     {{ post.notes[:100] + '...' }} 
                                 </p>
-                                <a href="{{ url_for('PetCare.view_post') + '?postId=' + post.id|string }}" class="more">Read more</a>
                             </div>
                         </div>
                     </div>
